@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: em_db
+    image: mongo:6
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./.db_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: test
+      MONGO_INITDB_DATABASE: em
