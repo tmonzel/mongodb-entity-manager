@@ -1,24 +1,50 @@
 <script lang="ts">
 	import { actions } from '$lib/actions';
 	import { FormControl, Validators, createForm } from '$lib/forms';
-	import FormInput from '$lib/forms/components/FormInput.svelte';
-	import type { Entity } from '$lib/types';
+	import type { Validator } from '$lib/forms/types';
+	import type { Entity, EntityAttribute } from '$lib/types';
 	import type { Document } from 'mongodb';
 	import { createEventDispatcher } from 'svelte';
+	import EntityFormAttribute from './EntityFormAttribute.svelte';
 
   export let entity: Entity;
   export let submittable = true;
   export let data: Document = {};
 
   type EntityFormModel = {
-    attributes: FormControl[]
+    [name: string]: FormControl | FormControl[];
   }
 
-  const { form, state, markAllAsTouched } = createForm<EntityFormModel>({
-    attributes: entity.schema.attributes.map(attr => {
-      return new FormControl(data ? data[attr.name] : '', attr.required ? Validators.required() : []);
-    })
-  });
+  function mapAttributeGroup(attributes: EntityAttribute[], value: any = {}) {
+    const result: EntityFormModel = {};
+
+    for(const attr of attributes) {
+      if(attr.children) {
+        result[attr.name] = attr.children.map((child, i) => mapAttribute(child, value[i] ? value[i][child.name] : undefined));
+      } else {
+        result[attr.name] = mapAttribute(attr, value[attr.name]);
+      }
+    }
+
+    return result;
+  }
+
+  function mapAttribute(attr: EntityAttribute, value: any): any {
+    const validations = attr.validations 
+        ? Object.entries(attr.validations).map(([name, config]) => {
+          switch(name) {
+            case 'required':
+              return Validators.required();
+          }
+        }) as Validator[]
+        : [];
+
+    return new FormControl(value ?? '', validations)
+  }
+
+  const { form, state, markAllAsTouched } = createForm<EntityFormModel, Document>(
+    mapAttributeGroup(entity.schema.attributes, data)
+  );
 
   const dispatch = createEventDispatcher();
 
@@ -28,11 +54,10 @@
       return;
     }
 
-    entity.schema.attributes.forEach((attr, i) => {
-      data[attr.name] = $state.value.attributes[i];
+    await actions.entities.saveDocument.mutate({ 
+      name: entity.name, 
+      data: $state.value 
     });
-
-    await actions.entities.saveDocument.mutate({ name: entity.name, data });
 
     dispatch('saved', data);
   }
@@ -41,17 +66,9 @@
 </script>
 
 <div>
-  {#each $form.attributes as attr, i}
-    {@const type = entity.schema.attributes[i]?.type}
-
-    {#if type === 'text'}
-    <div class="mb-3">
-      <FormInput bind:control={attr} label={entity.schema.attributes[i]?.label}></FormInput>
+  {#each entity.schema.attributes as attr}
+    <div class="mb-4">
+      <EntityFormAttribute bind:control={$form[attr.name]} attribute={attr} />
     </div>
-    {:else if type === 'number'}
-    <div class="mb-3">
-      <FormInput type="number" bind:control={attr} label={entity.schema.attributes[i]?.label}></FormInput>
-    </div>
-    {/if}
   {/each}
 </div>

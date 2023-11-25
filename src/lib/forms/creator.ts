@@ -8,7 +8,7 @@ function walkControls(schema: FormSchema, writer: (control: FormControl, path: s
   for(const [name, entry] of Object.entries(schema)) {
     if(Array.isArray(entry)) {
       result[name] = entry.map((v) => {
-        return v instanceof FormControl ? writer(v, name) : walkControls(v as FormSchema, writer);
+        return v instanceof FormControl ? writer(v, name) : walkControls(v, writer);
       });
     } else if(entry instanceof FormControl) {
       // Is concrete FormControl
@@ -45,7 +45,7 @@ export function createForm<T extends FormSchema, ValueType = any>(schema: T): Fo
       if(control.dirty) {
         dirty = true;
       }
-
+      
       if(control.touched) {
         touched = true;
 

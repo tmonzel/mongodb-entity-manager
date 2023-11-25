@@ -6,15 +6,24 @@ export type DataSchema = {
 
 export type EntityAttribute = {
   name: string;
-  label: string;
-  type: 'text' | 'number';
-  required: boolean;
+  label?: string;
+  type: 'text' | 'number' | 'object' | 'array';
+  validations?: { [name: string]: string | boolean };
+  children?: EntityAttribute[];
+}
+
+export type EntityList = {
+  title: string;
+  search?: string;
+  columns: string[];
+  pageSize: number;
 }
 
 export type EntitySchema = {
   name: string;
-  attributes: EntityAttribute[]
   description?: string;
+  attributes: EntityAttribute[];
+  list: EntityList;
 }
 
 export type Entity = {
