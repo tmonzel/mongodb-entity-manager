@@ -5,9 +5,10 @@ export type DataSchema = {
 }
 
 export type EntityAttribute = {
+  type: 'text' | 'number' | 'object' | 'array';
   name: string;
   label?: string;
-  type: 'text' | 'number' | 'object' | 'array';
+  render?: string;
   validations?: { [name: string]: string | boolean };
   children?: EntityAttribute[];
 }

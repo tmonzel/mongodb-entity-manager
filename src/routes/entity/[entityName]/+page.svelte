@@ -1,8 +1,33 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-import type { PageData } from './$types';
+	import type { EntityAttribute } from '$lib/types';
+	import type { Document } from 'mongodb';
+  import type { PageData } from './$types';
 
   export let data: PageData;
+
+  let entity = data.entity;
+  let schema = data.entity.schema;
+
+  let attributesByName: { [name: string]: EntityAttribute } = {}
+
+  for(const attr of schema.attributes) {
+    attributesByName[attr.name] = attr;
+  }
+
+  function renderCell(column: string, doc: Document): string {
+    const attr = attributesByName[column];
+
+    if(attr.render) {
+      return attr.render.replace(/(\{([a-zA-Z]+)\})+/g, (match, ...groups) => {
+        const attrName = groups[1];
+        
+        return doc[column] && doc[column][attrName] ? doc[column][attrName] : '-';
+      });
+    }
+
+    return doc[column] ?? '-'
+  }
 </script>
 
 <div class="page-options">
@@ -10,28 +35,28 @@ import type { PageData } from './$types';
     <span class="material-icons me-2">chevron_left</span>
     Entities
   </a>
-  <a class="btn btn-primary" href="./{data.entity.name}/new">+ Add {data.entity.schema.name}</a>
+  <a class="btn btn-primary" href="./{entity.name}/new">+ Add {schema.name}</a>
 </div>
 
-<h1 class="my-4">{data.entity.schema.name}</h1>
+<h1 class="my-4">{schema.name}</h1>
   
 <table class="table">
   <thead>
     <tr>
       <th>#</th>
-      {#each data.entity.schema.attributes as attr}
-      <th>{attr.label}</th>
+      {#each schema.list.columns as col}
+      <th>{attributesByName[col].label}</th>
       {/each}
       <th></th>
     </tr>
   </thead>
-  {#if data.entity.documents.length > 0 }
+  {#if entity.documents.length > 0 }
   <tbody>
-    {#each data.entity.documents as doc}
+    {#each entity.documents as doc}
     <tr>
       <td style="width: 20%;">{doc.id}</td>
-      {#each data.entity.schema.attributes as attr}
-      <td>{doc[attr.name] ?? '-'}</td>
+      {#each schema.list.columns as col}
+      <td>{renderCell(col, doc)}</td>
       {/each}
       <td style="max-width: 20px">
         <a class="btn p-0 d-flex" href="{$page.url}/{doc.id}/edit">
@@ -44,42 +69,8 @@ import type { PageData } from './$types';
   {/if}
 </table>
 
-{#if data.entity.documents.length === 0 }
+{#if entity.documents.length === 0 }
 <div class="alert alert-warning">
   No entries yet
 </div>
 {/if}
-
-<!--<Modal bind:this={formDialog} size="lg">
-  <svelte:fragment slot="title">
-    {#if selectedDocument}
-      Edit {data.schema.name}
-    {:else}
-      Add new {data.schema.name}
-    {/if}
-  </svelte:fragment>
-
-  <DocumentForm 
-    bind:this={form}
-    bind:submittable
-    schema={data.schema} 
-    input={selectedDocument}
-    on:success={() => formDialog.close()}
-  />
-  
-  <svelte:fragment slot="footer">
-    <button type="button" class="btn btn-secondary" on:click={() => formDialog.close()}>Cancel</button>
-    <button 
-      type="button" 
-      class="btn btn-primary" 
-      on:click={() => form.submit()}
-      disabled={!submittable}
-    >
-    {#if selectedDocument}
-      Save {data.schema.name}
-    {:else}
-      Create {data.schema.name}
-    {/if}
-    </button>
-  </svelte:fragment>
-</Modal>-->

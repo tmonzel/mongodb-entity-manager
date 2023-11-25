@@ -1,5 +1,6 @@
 import type { Readable, Writable } from 'svelte/store';
 import type { FormControl } from './form-control';
+import type { FormGroup } from './form-group';
 
 export type FieldValidation = { 
   valid: boolean; 
@@ -10,7 +11,7 @@ export type FieldValidation = {
 export type Validator = (value: unknown) => FieldValidation;
 
 export interface FormSchema {
-  [name: string]: FormControl | FormSchema | FormControl[] | FormSchema[];
+  [name: string]: FormControl | FormControl[] | FormSchema | FormGroup;
 }
 
 export interface FormValidationError {
@@ -26,8 +27,11 @@ export interface FormState<T> {
   value: T;
 }
 
-export interface Form<T, V> {
-  form: Writable<T>;
-  state: Readable<FormState<V>>;
+export interface Form<T> extends Writable<T> {
   markAllAsTouched: () => void;
+}
+
+export interface FormHandler<T, V> {
+  form: Form<T>,
+  state: Readable<FormState<V>>;
 }

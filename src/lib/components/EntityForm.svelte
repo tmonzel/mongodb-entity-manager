@@ -6,30 +6,41 @@
 	import type { Document } from 'mongodb';
 	import { createEventDispatcher } from 'svelte';
 	import EntityFormAttribute from './EntityFormAttribute.svelte';
+	import { FormGroup } from '$lib/forms/form-group';
 
   export let entity: Entity;
   export let submittable = true;
   export let data: Document = {};
 
-  type EntityFormModel = {
-    [name: string]: FormControl | FormControl[];
-  }
-
-  function mapAttributeGroup(attributes: EntityAttribute[], value: any = {}) {
-    const result: EntityFormModel = {};
+  function mapAttributeGroup(attributes: EntityAttribute[], value: any = {}): FormGroup {
+    const group = new FormGroup();
 
     for(const attr of attributes) {
       if(attr.children) {
-        result[attr.name] = attr.children.map((child, i) => mapAttribute(child, value[i] ? value[i][child.name] : undefined));
+        if(attr.type === 'object') {
+          const controls: { [key: string]: FormControl } = {};
+
+          for(const k in attr.children) {
+            const child = attr.children[k];
+            
+            controls[child.name] = getControlFromAttribute(child, value[attr.name] ? value[attr.name][child.name] : undefined)
+          }
+          group.setControl(attr.name, new FormGroup(controls));
+
+        } else {
+          //group.setControl(attr.name, attr.children.map((child, i) => getControlFromAttribute(child, value[i] ? value[i][child.name] : undefined)))
+        }
+
+        
       } else {
-        result[attr.name] = mapAttribute(attr, value[attr.name]);
+        group.setControl(attr.name, getControlFromAttribute(attr, value[attr.name]))
       }
     }
 
-    return result;
+    return group;
   }
 
-  function mapAttribute(attr: EntityAttribute, value: any): any {
+  function getControlFromAttribute(attr: EntityAttribute, value: any): FormControl {
     const validations = attr.validations 
         ? Object.entries(attr.validations).map(([name, config]) => {
           switch(name) {
@@ -42,7 +53,7 @@
     return new FormControl(value ?? '', validations)
   }
 
-  const { form, state, markAllAsTouched } = createForm<EntityFormModel, Document>(
+  const { form, state } = createForm<FormGroup, Document>(
     mapAttributeGroup(entity.schema.attributes, data)
   );
 
@@ -50,7 +61,7 @@
 
   export const submit = async() => {
     if(!$state.valid) {
-      markAllAsTouched();
+      form.markAllAsTouched();
       return;
     }
 
@@ -68,7 +79,7 @@
 <div>
   {#each entity.schema.attributes as attr}
     <div class="mb-4">
-      <EntityFormAttribute bind:control={$form[attr.name]} attribute={attr} />
+      <EntityFormAttribute bind:control={$form.controls[attr.name]} attribute={attr} />
     </div>
   {/each}
 </div>
