@@ -21,22 +21,6 @@ export const DataSource = {
 	}
 }
 
-export function getCollection(name: string) {
-	const collection = DataSource.getCollection(name);
-	const defaultPipeline = [
-		{ $addFields: { id: { $toString: "$_id" } } },
-		{ $project: { _id: 0 } }
-	];
-
-	async function findAll(): Promise<Document[]> {
-		return collection.aggregate(defaultPipeline).toArray()
-	}
-
-	return {
-		findAll
-	}
-}
-
 export function mapDocument(doc: Document): Document {
   if(doc['_id'] !== undefined) {
     doc['id'] = doc['_id'] + '';

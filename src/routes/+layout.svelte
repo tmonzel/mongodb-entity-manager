@@ -1,3 +1,7 @@
+<script lang="ts">
+	import Notification from '$lib/notification/Notification.svelte';
+</script>
+
 <svelte:head>
 	<link
 		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -23,6 +27,8 @@
 		}
 	</style>
 </svelte:head>
+
+<Notification />
 
 <main class="p-5">
 	<slot />

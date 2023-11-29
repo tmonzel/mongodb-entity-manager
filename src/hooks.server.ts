@@ -1,6 +1,6 @@
 import type { Dict } from '@trpc/server';
 import { resolveHTTPResponse } from '@trpc/server/http';
-import { router } from '$lib/api/router';
+import { router } from '$lib/router';
 import { RPC_URL } from '$lib/constants';
 import { DataSource } from '$lib/data';
 

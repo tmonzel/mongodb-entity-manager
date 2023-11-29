@@ -1,14 +1,14 @@
 
-import { defaultCaller } from '$lib/api/router.js';
+import { defaultCaller } from '$lib/router';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
-	const entity = await (await defaultCaller(event)).entities.load(event.params.entityName);
+	const documents = await (await defaultCaller(event)).documents.loadAll(event.params.entityName);
 
-	if(entity) {
+	if(documents) {
 		return {
-			entity
+			documents
 		};
 	}
 

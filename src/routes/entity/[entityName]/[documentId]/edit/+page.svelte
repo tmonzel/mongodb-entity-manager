@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import EntityForm from '$lib/components/EntityForm.svelte';
+	import EntityForm from '$lib/entity/components/EntityForm.svelte';
+	import { notify } from '$lib/notification';
+	import { readSchema } from '$lib/schema';
 
   let form: EntityForm;
   let submittable = true;
-  let entity = $page.data.entity;
+  let schema = readSchema();
+  let entity = schema[$page.params.entityName];
   let document = $page.data.document;
 </script>
 
@@ -17,15 +20,21 @@
   <button class="btn btn-primary" on:click={() => form.submit()} disabled={!submittable}>Save changes</button>
 </div>
 
-<h5>Edit {entity.schema.name}</h5>
+<h1 class="mb-5">Edit {entity.name}</h1>
 
 <EntityForm 
   bind:this={form} 
   bind:submittable 
   on:saved={() => {
-    goto($page.url + '/../..', { invalidateAll: true })
+    notify({ 
+      type: 'success', 
+      message: entity.name + ' saved' 
+    });
+
+    goto($page.url + '/../..', { invalidateAll: true });
   }}
 
-  {entity} 
+  entityName={$page.params.entityName}
+  attributes={entity.attributes} 
   data={document}
 />

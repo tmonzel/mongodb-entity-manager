@@ -3,8 +3,10 @@
 
   export let opened = false;
   export let size = 'md';
+  export let data: { [key: string]: any } | undefined = undefined;
 
-  export function open(): void {
+  export function open(d?: { [key: string]: any }): void {
+    data = d;
     opened = true;
   }
 
@@ -22,10 +24,10 @@
           <button type="button" class="btn-close" aria-label="Close" on:click={close}></button>
         </div>
         <div class="modal-body">
-          <slot />
+          <slot {data} />
         </div>
         <div class="modal-footer">
-          <slot name="footer"></slot>
+          <slot name="footer" {data}></slot>
         </div>
       </div>
     </div>

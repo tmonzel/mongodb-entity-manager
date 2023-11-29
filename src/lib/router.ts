@@ -1,11 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { createRouter, publicProcedure } from '../rpc';
-import { schema } from './schema';
-import { entities } from './entity';
+import { createRouter } from './rpc';
+import { documents } from './entity/documents';
 
 export const router = createRouter({
-	loadSchema: publicProcedure.query(() => schema),
-	entities
+	documents
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
