@@ -3,7 +3,6 @@
 	import type { FormControl } from '../form-control';
 
   export let label: string | null = null;
-  export let value: any = null;
   export let control: FormControl;
   export let options: { value: any; name: string; }[] = [];
 
@@ -13,9 +12,14 @@
   }>();
 
   function handleChange(e: Event) {
-    value = (e.target as any).value;
-    control = control.handleChange(value);
-    dispatch('change', value);
+    let val = (e.target as any).value;
+
+    if(val === '') {
+      val = null;
+    }
+
+    control = control.handleChange(val);
+    dispatch('change', val);
   }
 
   function handleTouched(e: Event) {

@@ -97,14 +97,49 @@ export function readSchema(): DataSchema {
         },
 
         {
+          name: 'state',
+          label: 'State',
+          type: 'select',
+          options: [
+            {
+              name: 'No State',
+              value: null
+            },
+
+            {
+              name: 'Public',
+              value: 'public'
+            },
+
+            {
+              name: 'Private',
+              value: 'private'
+            }
+          ],
+          validations: {
+            required: true
+          }
+        },
+
+        {
+          name: 'published',
+          label: 'Published',
+          type: 'switch',
+          value: true,
+          validations: {
+            required: true
+          }
+        },
+
+        /*{
           name: 'retailer',
           label: 'Retailer',
           type: 'relationship:has-one',
-        }
+        }*/
       ],
       list: {
         title: 'Markets',
-        columns: ['name'],
+        columns: ['name', 'published', 'state'],
         pageSize: 25
       }
     },

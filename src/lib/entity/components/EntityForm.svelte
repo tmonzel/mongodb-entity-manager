@@ -39,6 +39,12 @@
         case 'relationship:has-one':
           group.setControl(attr.name, new FormControl<string>(value[attr.name] ?? ''));
           break;
+        case 'switch':
+          group.setControl(attr.name, new FormControl<boolean>(value[attr.name] ?? (attr.default ?? false)))
+          break;
+        case 'select':
+          group.setControl(attr.name, new FormControl(value[attr.name] ?? attr.default))
+          break;
         case 'text': 
         case 'number':
           group.setControl(attr.name, getControlFromAttribute(attr, value[attr.name]))

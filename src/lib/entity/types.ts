@@ -19,14 +19,33 @@ export interface ObjectAttribute {
   children?: EntityAttribute[];
 }
 
+export interface SwitchAttribute {
+  type: 'switch';
+  name: string;
+  label: string;
+  value?: boolean;
+  validations?: { [name: string]: string | boolean };
+  default?: boolean;
+}
+
+export interface SelectAttribute {
+  type: 'select';
+  name: string;
+  label?: string;
+  options: { name: string; value: string | number | null; }[];
+  validations?: { [name: string]: string | boolean };
+  default?: boolean;
+}
+
 export interface InputAttribute {
   type: 'text' | 'number';
   name: string;
   label?: string;
   validations?: { [name: string]: string | boolean };
+  default?: string | number;
 }
 
-export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute;
+export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute | SwitchAttribute | SelectAttribute;
 
 export type EntityList = {
   title: string;
