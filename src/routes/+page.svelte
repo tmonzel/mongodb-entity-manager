@@ -20,3 +20,9 @@
 	</div>
 	{/each}
 </div>
+
+<style>
+	.card:hover {
+		background-color: var(--bs-light);
+	}
+</style>

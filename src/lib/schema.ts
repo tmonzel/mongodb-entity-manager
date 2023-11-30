@@ -30,7 +30,7 @@ export function readSchema(): DataSchema {
           label: 'Address',
           type: 'object',
           renderAs: '{street} {postalCode}',
-          children: [
+          attributes: [
             {
               name: 'street',
               label: 'Street',
@@ -94,6 +94,32 @@ export function readSchema(): DataSchema {
           validations: {
             required: true
           }
+        },
+
+        {
+          name: 'nestedProps',
+          label: 'Properties',
+          type: 'array',
+          renderAs: '{key}: {value}',
+          attributes: [
+            {
+              name: 'key',
+              label: 'Key',
+              type: 'text',
+              validations: {
+                required: true
+              }
+            },
+      
+            {
+              name: 'value',
+              label: 'Value',
+              type: 'text',
+              validations: {
+                required: true
+              }
+            }
+          ]
         },
 
         {

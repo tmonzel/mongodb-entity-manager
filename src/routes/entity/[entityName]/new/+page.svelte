@@ -1,15 +1,25 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import EntityForm from '$lib/entity/components/EntityForm.svelte';
+	import EntityAttributesForm from '$lib/entity/components/EntityAttributesForm.svelte';
+	import { createForm, getFormState } from '$lib/form';
 	import { notify } from '$lib/notification';
 	import { readSchema } from '$lib/schema';
 
-  let form: EntityForm;
-  let submittable = true;
-  let schema = readSchema();
-  
-  $: entity = schema[$page.params.entityName];
+  const form = createForm();
+  const schema = readSchema();
+  const entity = schema[$page.params.entityName];
+
+  function submit() {
+    notify({ 
+      type: 'success', 
+      message: entity.name + ' created' 
+    });
+
+    goto($page.url + '/..', { invalidateAll: true });
+  }
+
+  $: formState = getFormState($form);
 </script>
 
 <div class="page-options">
@@ -17,23 +27,9 @@
     <span class="material-icons me-2">chevron_left</span>
     List
   </a>
-  <button class="btn btn-primary" on:click={() => form.submit()} disabled={!submittable}>Create</button>
+  <button class="btn btn-primary" on:click={submit} disabled={!formState.submittable}>Create</button>
 </div>
 
 <h1 class="mb-5">Create {entity.name}</h1>
 
-<EntityForm 
-  bind:this={form} 
-  bind:submittable 
-  on:saved={() => {
-    notify({ 
-      type: 'success', 
-      message: entity.name + ' created' 
-    });
-
-    goto($page.url + '/..', { invalidateAll: true });
-  }}
-
-  entityName={$page.params.entityName}
-  attributes={entity.attributes} 
-/>
+<EntityAttributesForm bind:form={$form} attributes={entity.attributes} />

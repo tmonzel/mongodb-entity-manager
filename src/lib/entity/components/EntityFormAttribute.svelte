@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { FormControl } from '$lib/form';
 	import { FormInput } from '$lib/form/components';
-	import { FormGroup } from '$lib/form/form-group';
 	import type { EntityAttribute } from '$lib/entity/types';
 	import RelationshipAttribute from './RelationshipAttribute.svelte';
 	import FormSelect from '$lib/form/components/FormSelect.svelte';
 	import FormCheckbox from '$lib/form/components/FormCheckbox.svelte';
+	import ArrayAttribute from './ArrayAttribute.svelte';
+	import { FormGroup } from '$lib/form/types';
 
   export let control: FormControl | FormControl[] | FormGroup;
   export let attribute: EntityAttribute;
@@ -35,6 +36,10 @@
         label={attribute.label}
       />
 
+    {:else if attribute.type === 'array'}
+
+      <ArrayAttribute bind:control attributes={attribute.attributes} label={attribute.label} />
+
     {:else if attribute.type === 'relationship:has-many'}
 
       <RelationshipAttribute bind:control attribute={attribute} />
@@ -58,16 +63,16 @@
     {/if}
   {/if}
   
-  {#if control instanceof FormGroup && attribute.type === 'object' && attribute.children}
+  {#if control instanceof FormGroup && attribute.type === 'object' && attribute.attributes}
     
     <div class="bg-light p-3">
       <div class="mb-2">
         <small class="text-muted">{attribute.label}</small>
       </div>
       <div class="row">
-        {#each attribute.children as attr, i}
+        {#each attribute.attributes as attr, i}
           <div class="col">
-            <svelte:self bind:control={control.controls[attr.name]} attribute={attr} />
+            <svelte:self bind:control={control[attr.name]} attribute={attr} />
           </div>
         {/each}
       </div>

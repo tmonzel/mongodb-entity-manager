@@ -1,6 +1,4 @@
-import type { Readable, Writable } from 'svelte/store';
 import type { FormControl } from './form-control';
-import type { FormGroup } from './form-group';
 
 export type FieldValidation = { 
   valid: boolean; 
@@ -19,19 +17,19 @@ export interface FormValidationError {
   message: string;
 }
 
-export interface FormState<T> {
+export class FormGroup {
+  [controlName: string]: FormControl | FormControl[] | FormGroup;
+
+  constructor(controls: { [controlName: string]: FormControl | FormControl[] | FormGroup } = {}) {
+    Object.assign(this, controls);
+  }
+}
+
+export interface FormState {
   valid: boolean;
+  errors: FormValidationError[];
   touched: boolean;
   dirty: boolean;
+  value: { [prop: string]: unknown };
   submittable: boolean;
-  value: T;
-}
-
-export interface Form<T> extends Writable<T> {
-  markAllAsTouched: () => void;
-}
-
-export interface FormHandler<T, V> {
-  form: Form<T>,
-  state: Readable<FormState<V>>;
 }

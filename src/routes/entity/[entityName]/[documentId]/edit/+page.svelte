@@ -1,15 +1,38 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import EntityForm from '$lib/entity/components/EntityForm.svelte';
+	import { actions } from '$lib/actions';
+	import EntityAttributesForm from '$lib/entity/components/EntityAttributesForm.svelte';
+	import { createForm, getFormState, markAllAsTouched } from '$lib/form';
 	import { notify } from '$lib/notification';
 	import { readSchema } from '$lib/schema';
 
-  let form: EntityForm;
-  let submittable = true;
-  let schema = readSchema();
-  let entity = schema[$page.params.entityName];
-  let document = $page.data.document;
+  const form = createForm();
+  const schema = readSchema();
+  const entity = schema[$page.params.entityName];
+  const document = $page.data.document;
+
+  export const submit = async() => {
+    if(!formState.valid) {
+      markAllAsTouched(form);
+      return;
+    }
+
+    await actions.documents.updateOne.mutate({ 
+      entityName: $page.params.entityName, 
+      id: document.id,
+      changes: formState.value as Partial<Document> 
+    });
+
+    notify({ 
+      type: 'success', 
+      message: entity.name + ' saved' 
+    });
+
+    goto($page.url + '/../..', { invalidateAll: true });
+  }
+
+  $: formState = getFormState($form);
 </script>
 
 <div class="page-options">
@@ -17,24 +40,19 @@
     <span class="material-icons me-2">chevron_left</span>
     List
   </a>
-  <button class="btn btn-primary" on:click={() => form.submit()} disabled={!submittable}>Save changes</button>
+
+  <button 
+    class="btn btn-primary" 
+    on:click={submit} 
+    disabled={!formState.submittable}
+  >
+    Save changes
+  </button>
 </div>
 
 <h1 class="mb-5">Edit {entity.name}</h1>
-
-<EntityForm 
-  bind:this={form} 
-  bind:submittable 
-  on:saved={() => {
-    notify({ 
-      type: 'success', 
-      message: entity.name + ' saved' 
-    });
-
-    goto($page.url + '/../..', { invalidateAll: true });
-  }}
-
-  entityName={$page.params.entityName}
+<EntityAttributesForm 
+  bind:form={$form} 
   attributes={entity.attributes} 
-  data={document}
+  value={document} 
 />

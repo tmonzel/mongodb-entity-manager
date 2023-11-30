@@ -16,7 +16,7 @@ export interface ObjectAttribute {
   name: string;
   label?: string;
   renderAs?: string;
-  children?: EntityAttribute[];
+  attributes: EntityAttribute[];
 }
 
 export interface SwitchAttribute {

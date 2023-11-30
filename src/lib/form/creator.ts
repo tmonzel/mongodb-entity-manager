@@ -1,32 +1,75 @@
-import { derived, writable } from 'svelte/store';
-import type { FormHandler, FormState } from './types';
-import type { FormGroup } from './form-group';
+import { writable, type Writable } from 'svelte/store';
+import { FormControl } from './form-control';
+import { FormGroup, type FormState } from './types';
 
-export function createForm<T extends FormGroup, ValueType = any>(group: T): FormHandler<T, ValueType> {
-  const store = writable<T>(group);
-  const state = derived(store, (g) => {
-    const errors = g.getErrors();
-    const valid = errors.length === 0;
-    const touched = g.isTouched();
-    const dirty = g.isDirty();
-    const submittable = !touched || valid;
-    const value = g.getValue();
-
-    return {
-      valid,
-      touched,
-      dirty,
-      value,
-      submittable
-    } satisfies FormState<ValueType> as FormState<ValueType>;
-  });
-
-  function markAllAsTouched(): void {
-    store.update(g => {
-      g.markAllAsTouched();
-      return g;
-    })
+export function getFormState(form: FormGroup): FormState {
+  let state: FormState = {
+    valid: false,
+    errors: [],
+    touched: false,
+    dirty: false,
+    submittable: true,
+    value: {}
   }
 
-  return { form: { ...store, markAllAsTouched }, state };
+  for(const key in form) {
+    const control = form[key];
+
+    if(control instanceof FormControl) {
+      if(control.errorMessage) {
+        state.errors.push({ name: key, message: control.errorMessage! });
+      }
+
+      if(!state.touched && control.touched) {
+        state.touched = true;
+      }
+
+      if(!state.dirty && control.dirty) {
+        state.dirty = true;
+      }
+
+      state.value[key] = control.value;
+
+    } else if(control instanceof FormGroup) {
+      const childState = getFormState(control);
+
+      state = {
+        ...childState, 
+        errors: [...state.errors, ...childState.errors],
+        value: { ...state.value, [key]: childState.value }
+      };
+    }
+  }
+
+  if(state.errors.length === 0) {
+    state.valid = true;
+  }
+
+  if(state.touched && !state.valid) {
+    state.submittable = false;
+  }
+
+  return state;
+}
+
+export function markAllAsTouched(form: Writable<FormGroup>): void {
+  function updater(group: FormGroup): FormGroup {
+    for(const key in group.controls) {
+      const control = group[key];
+
+      if(control instanceof FormControl) {
+        control.touched = true;
+      } else if(control instanceof FormGroup) {
+        group[key] = updater(control);
+      }
+    }
+
+    return group;
+  }
+
+  form.update(g => updater(g))
+}
+
+export function createForm(controls: { [key: string]: FormControl | FormControl[] | FormGroup } = {}): Writable<FormGroup> {
+  return writable(new FormGroup(controls));
 }

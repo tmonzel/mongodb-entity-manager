@@ -3,7 +3,7 @@
 	import type { EntityAttribute } from '$lib/entity/types';
 	import type { Document } from 'mongodb';
   import type { PageData } from './$types';
-	import Modal from '$lib/components/Modal.svelte';
+	import Dialog from '$lib/components/Dialog.svelte';
 	import { readSchema } from '$lib/schema';
 	import { actions } from '$lib/actions';
 	import { invalidateAll } from '$app/navigation';
@@ -11,7 +11,7 @@
   export let data: PageData;
 
   let schema = readSchema();
-  let deleteDialog: Modal;
+  let deleteDialog: Dialog;
   let entity = schema[$page.params.entityName];
   let attributesByName: { [name: string]: EntityAttribute } = {}
   
@@ -95,7 +95,7 @@
 </div>
 {/if}
 
-<Modal bind:this={deleteDialog} let:data>
+<Dialog bind:this={deleteDialog} let:data>
   <svelte:fragment slot="title">
     Confirm delete
   </svelte:fragment>
@@ -110,4 +110,4 @@
     Yes, delete!
     </button>
   </svelte:fragment>
-</Modal>
+</Dialog>
