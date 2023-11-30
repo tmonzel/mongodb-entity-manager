@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { actions } from '$lib/actions';
-	import EntityAttributesForm from '$lib/entity/components/EntityAttributesForm.svelte';
+	import EntityForm from '$lib/entity/components/EntityForm.svelte';
 	import { createForm, getFormState, markAllAsTouched } from '$lib/form';
 	import { notify } from '$lib/notification';
 	import { readSchema } from '$lib/schema';
@@ -51,7 +51,7 @@
 </div>
 
 <h1 class="mb-5">Edit {entity.name}</h1>
-<EntityAttributesForm 
+<EntityForm 
   bind:form={$form} 
   attributes={entity.attributes} 
   value={document} 

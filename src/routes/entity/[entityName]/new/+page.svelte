@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import EntityAttributesForm from '$lib/entity/components/EntityAttributesForm.svelte';
-	import { createForm, getFormState } from '$lib/form';
+	import { actions } from '$lib/actions';
+	import EntityForm from '$lib/entity/components/EntityForm.svelte';
+	import { createForm, getFormState, markAllAsTouched } from '$lib/form';
 	import { notify } from '$lib/notification';
 	import { readSchema } from '$lib/schema';
 
@@ -10,7 +11,17 @@
   const schema = readSchema();
   const entity = schema[$page.params.entityName];
 
-  function submit() {
+  async function submit() {
+    if(!formState.valid) {
+      markAllAsTouched(form);
+      return;
+    }
+
+    await actions.documents.create.mutate({ 
+      entityName: $page.params.entityName, 
+      data: formState.value 
+    });
+
     notify({ 
       type: 'success', 
       message: entity.name + ' created' 
@@ -32,4 +43,4 @@
 
 <h1 class="mb-5">Create {entity.name}</h1>
 
-<EntityAttributesForm bind:form={$form} attributes={entity.attributes} />
+<EntityForm bind:form={$form} attributes={entity.attributes} />
