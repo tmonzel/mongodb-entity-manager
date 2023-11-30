@@ -54,7 +54,7 @@ export function getFormState(form: FormGroup): FormState {
 
 export function markAllAsTouched(form: Writable<FormGroup>): void {
   function updater(group: FormGroup): FormGroup {
-    for(const key in group.controls) {
+    for(const key in group) {
       const control = group[key];
 
       if(control instanceof FormControl) {
