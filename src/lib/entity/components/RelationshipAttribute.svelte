@@ -56,11 +56,11 @@
     unsubscribeWatchIds();
   })
 
-  let selectedDocuments = derived([selectedIds, store], ([ids, entity]) => {
+  const selectedDocuments = derived([selectedIds, store], ([ids, entity]) => {
     return ids.map(id => entity.documents[id])
   });
 
-  let availableDocuments = derived([list, selectedIds], ([documents, selectedIds]) => {
+  const availableDocuments = derived([list, selectedIds], ([documents, selectedIds]) => {
     return documents.filter(doc => selectedIds.find(id => id === doc.id) === undefined);
   })
 </script>
