@@ -14,3 +14,9 @@
 	</div>
   {/each}
 </div>
+
+<style>
+	.toast {
+		width: fit-content;
+	}
+</style>
