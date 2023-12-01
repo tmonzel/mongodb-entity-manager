@@ -6,6 +6,7 @@
 	import Dialog from '$admin/components/Dialog.svelte';
 	import { actions } from '$admin/actions';
 	import { invalidateAll } from '$app/navigation';
+	import { notify } from '$admin/notification';
 
   export let data: LayoutData;
 
@@ -23,6 +24,11 @@
 
   async function deleteDocument(id: string): Promise<void> {
     await actions.documents.deleteOne.mutate({ id, name: data.entity.name });
+
+    notify({ 
+      type: 'success', 
+      message: `${data.entity.type}#${id} removed` 
+    });
 
     deleteDialog.close();
     invalidateAll();
@@ -43,7 +49,7 @@
   }
 </script>
 
-<div class="page-options">
+<div class="page-options justify-content-between">
   <a class="btn btn-light d-flex me-2" href="{$page.url}/../..">
     <span class="material-icons me-2">chevron_left</span>
     Entities
