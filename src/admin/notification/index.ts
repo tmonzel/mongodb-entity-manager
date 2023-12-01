@@ -12,7 +12,7 @@ export function notify(notification: Notification) {
 
   setTimeout(() => {
     store.update(notifications => notifications.filter(n => n !== notification));
-  }, 1000)
+  }, 1800)
 }
 
 export const notifications = readonly(store);
