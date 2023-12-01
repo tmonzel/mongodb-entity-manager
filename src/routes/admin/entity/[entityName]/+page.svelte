@@ -46,7 +46,7 @@
 </script>
 
 <div class="page-options">
-  <a class="btn btn-light d-flex me-2" href="/">
+  <a class="btn btn-light d-flex me-2" href="{$page.url}/../..">
     <span class="material-icons me-2">chevron_left</span>
     Entities
   </a>

@@ -59,7 +59,14 @@ export type EntitySchema = {
   description?: string;
   renderAs?: string;
   attributes: EntityAttribute[];
+  nestedSchemata?: NestedEntitySchema[];
   list: EntityList;
+}
+
+export type NestedEntitySchema = {
+  name: string;
+  label: string;
+  attributes: EntityAttribute[];
 }
 
 export type Entity = {

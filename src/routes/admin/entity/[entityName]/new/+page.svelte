@@ -43,4 +43,4 @@
 
 <h1 class="mb-5">Create {entity.name}</h1>
 
-<EntityForm bind:form={$form} attributes={entity.attributes} />
+<EntityForm bind:form={$form} schema={entity} />

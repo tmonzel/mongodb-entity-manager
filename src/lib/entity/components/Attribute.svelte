@@ -5,8 +5,8 @@
 	import RelationshipAttribute from './RelationshipAttribute.svelte';
 	import FormSelect from '$lib/form/components/FormSelect.svelte';
 	import FormCheckbox from '$lib/form/components/FormCheckbox.svelte';
-	import ArrayAttribute from './ArrayAttribute.svelte';
 	import { FormGroup } from '$lib/form/types';
+	import NestedAttributeForm from './NestedAttributeForm.svelte';
 
   export let control: FormControl | FormControl[] | FormGroup;
   export let attribute: EntityAttribute;
@@ -38,7 +38,11 @@
 
     {:else if attribute.type === 'array'}
 
-      <ArrayAttribute bind:control attributes={attribute.attributes} label={attribute.label} />
+      <NestedAttributeForm 
+        bind:control 
+        attributes={attribute.attributes} 
+        label={attribute.label} 
+      />
 
     {:else if attribute.type === 'relationship:has-many'}
 

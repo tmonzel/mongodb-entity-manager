@@ -1,19 +1,12 @@
 <script lang="ts">
 	import type { Document } from 'mongodb';
-	import type { EntityAttribute } from '../types';
-	import EntityFormAttribute from './EntityFormAttribute.svelte';
-	import { createControlsFromAttributes } from '../helpers';
+	import type { EntitySchema } from '../types';
 	import type { FormGroup } from '$lib/form/types';
+	import AttributeForm from './AttributeForm.svelte';
 
-  export let attributes: EntityAttribute[];
+  export let schema: EntitySchema;
   export let value: Document = {};
   export let form: FormGroup;
-
-  Object.assign(form, createControlsFromAttributes(attributes, value));
 </script>
 
-{#each attributes as attr}
-  <div class="mb-4">
-    <EntityFormAttribute bind:control={form[attr.name]} attribute={attr} />
-  </div>
-{/each}
+<AttributeForm attributes={schema.attributes} {form} {value} />

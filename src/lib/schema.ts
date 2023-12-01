@@ -100,7 +100,6 @@ export function readSchema(): DataSchema {
           name: 'nestedProps',
           label: 'Properties',
           type: 'array',
-          renderAs: '{key}: {value}',
           attributes: [
             {
               name: 'key',
@@ -163,11 +162,38 @@ export function readSchema(): DataSchema {
           type: 'relationship:has-one',
         }*/
       ],
+
+      nestedSchemata: [
+        {
+          name: 'customers',
+          label: 'Customers',
+          attributes: [
+            {
+              name: 'firstName',
+              label: 'First Name',
+              type: 'text',
+              validations: {
+                required: true
+              }
+            },
+      
+            {
+              name: 'lastName',
+              label: 'Last Name',
+              type: 'text',
+              validations: {
+                required: true
+              }
+            }
+          ]
+        }
+      ],
+
       list: {
         title: 'Markets',
         columns: ['name', 'published', 'state'],
         pageSize: 25
-      }
+      },
     },
 
     retailers: {

@@ -1,10 +1,16 @@
-import { FormControl, Validators } from '$lib/form';
-import { FormGroup, type Validator } from '$lib/form/types';
-import type { EntityAttribute } from './types';
+<script lang="ts">
+	import type { Document } from 'mongodb';
+	import type { EntityAttribute } from '../types';
+	import { FormGroup, type Validator } from '$lib/form/types';
+	import { FormControl, Validators } from '$lib/form';
+  
+	import Attribute from './Attribute.svelte';
 
-export function createControlsFromAttributes(attributes: EntityAttribute[], value: any = {}): { [key: string]: FormControl | FormControl[] | FormGroup } {
+  export let attributes: EntityAttribute[];
+  export let value: Document = {};
+  export let form: FormGroup;
+
   const controls: { [key: string]: FormControl | FormControl[] | FormGroup } = {}
-
   let validators: Validator[] = [];
 
   for(const attr of attributes) {
@@ -58,5 +64,11 @@ export function createControlsFromAttributes(attributes: EntityAttribute[], valu
     }
   }
 
-  return controls;
-}
+  Object.assign(form, controls);
+</script>
+
+{#each attributes as attribute}
+  <div class="mb-4">
+    <Attribute bind:control={form[attribute.name]} {attribute} />
+  </div>
+{/each}

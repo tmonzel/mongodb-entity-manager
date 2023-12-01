@@ -32,6 +32,8 @@
     goto($page.url + '/../..', { invalidateAll: true });
   }
 
+  let selectedSchema = entity;
+
   $: formState = getFormState($form);
 </script>
 
@@ -51,8 +53,22 @@
 </div>
 
 <h1 class="mb-5">Edit {entity.name}</h1>
+
+{#if entity.nestedSchemata}
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#">General</a>
+  </li>
+  {#each entity.nestedSchemata as s}
+  <li class="nav-item">
+    <a class="nav-link" href="#" on:click={() => selectedSchema = s}>{s.label}</a>
+  </li>
+  {/each}
+</ul>
+{/if}
+
 <EntityForm 
   bind:form={$form} 
-  attributes={entity.attributes} 
+  schema={selectedSchema} 
   value={document} 
 />
