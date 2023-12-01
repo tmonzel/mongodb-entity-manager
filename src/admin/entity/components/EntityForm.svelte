@@ -9,4 +9,4 @@
   export let form: FormGroup;
 </script>
 
-<AttributeForm attributes={schema.attributes} {form} {value} />
+<AttributeForm attributes={schema.attributes} bind:form {value} />
