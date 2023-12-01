@@ -47,26 +47,28 @@ export interface InputAttribute {
 
 export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute | SwitchAttribute | SelectAttribute;
 
-export type EntityList = {
+export type EntityCollection = {
   title: string;
   search?: string;
-  columns: string[];
-  pageSize: number;
+  columns?: string[];
+  pageSize?: number;
 }
 
 export type EntitySchema = {
   name: string;
+  type: string;
   description?: string;
   renderAs?: string;
   attributes: EntityAttribute[];
   nestedSchemata?: NestedEntitySchema[];
-  list: EntityList;
+  collection: EntityCollection;
 }
 
 export type NestedEntitySchema = {
   name: string;
-  label: string;
+  type: string;
   attributes: EntityAttribute[];
+  collection: EntityCollection;
 }
 
 export type Entity = {

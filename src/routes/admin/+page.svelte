@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { readSchema } from '$lib/schema';
+	import type { LayoutData } from './$types';
 
-	let schema = readSchema();
+	export let data: LayoutData;
 </script>
 
 <div class="row">
-	{#each Object.entries(schema) as [name, entity]}
+	{#each data.schemata as entity}
 	<div class="col-md-4 mb-4">
-		<a class="card" href="{$page.url}/entity/{name}">
+		<a class="card" href="{$page.url}/entity/{entity.name}">
 			<div class="card-body">
-				<h5 class="card-title">{entity.name}</h5>
+				<h5 class="card-title">{entity.type}</h5>
 				<!--<h6 class="card-subtitle mb-2 text-body-secondary">{name}</h6>-->
 				{#if entity.description}
 					<p class="card-text">{entity.description}</p>

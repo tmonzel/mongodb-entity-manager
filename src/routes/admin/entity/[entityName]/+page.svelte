@@ -4,18 +4,16 @@
 	import type { Document } from 'mongodb';
   import type { PageData } from './$types';
 	import Dialog from '$lib/components/Dialog.svelte';
-	import { readSchema } from '$lib/schema';
 	import { actions } from '$lib/actions';
 	import { invalidateAll } from '$app/navigation';
 
   export let data: PageData;
 
-  let schema = readSchema();
   let deleteDialog: Dialog;
-  let entity = schema[$page.params.entityName];
   let attributesByName: { [name: string]: EntityAttribute } = {}
+  let columns: string[] = data.entity.collection.columns ?? data.entity.attributes.map(attr => attr.name);
   
-  for(const attr of entity.attributes) {
+  for(const attr of data.entity.attributes) {
     attributesByName[attr.name] = attr;
   }
 
@@ -24,7 +22,7 @@
   }
 
   async function deleteDocument(id: string): Promise<void> {
-    await actions.documents.deleteOne.mutate({ id, name: $page.params.entityName });
+    await actions.documents.deleteOne.mutate({ id, name: data.entity.name });
 
     deleteDialog.close();
     invalidateAll();
@@ -50,16 +48,17 @@
     <span class="material-icons me-2">chevron_left</span>
     Entities
   </a>
-  <a class="btn btn-primary" href="./{$page.params.entityName}/new">+ Add {entity.name}</a>
+  <a class="btn btn-primary" href="{$page.url}/new">+ Add {data.entity.type}</a>
 </div>
 
-<h1 class="my-4">{entity.name}</h1>
+<h1>{data.entity.collection.title}</h1>
+<p class="lead mb-4">{data.entity.description}</p>
   
 <table class="table">
   <thead>
     <tr>
       <th>#</th>
-      {#each entity.list.columns as col}
+      {#each columns as col}
       <th>{attributesByName[col].label}</th>
       {/each}
       <th></th>
@@ -70,11 +69,14 @@
     {#each data.documents as doc}
     <tr>
       <td style="width: 20%;">{doc.id}</td>
-      {#each entity.list.columns as col}
+      {#each columns as col}
       <td>{renderCell(col, doc)}</td>
       {/each}
       <td style="width: 1%">
         <div class="d-flex">
+          <a class="btn p-0 d-flex me-2" href="{$page.url}/{doc.id}">
+            <span class="material-icons">arrow_right_alt</span>
+          </a>
           <a class="btn p-0 d-flex me-2" href="{$page.url}/{doc.id}/edit">
             <span class="material-icons">edit</span>
           </a>

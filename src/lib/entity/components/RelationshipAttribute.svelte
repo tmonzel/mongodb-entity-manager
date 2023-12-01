@@ -4,14 +4,13 @@
 	import type { EntitySchema, RelationshipAttribute } from '../types';
 	import { useEntity } from '$lib/actions';
 	import type { Document } from 'mongodb';
-	import { readSchema } from '$lib/schema';
 	import { derived, writable } from 'svelte/store';
 
   export let control: FormControl<string[]>;
   export let attribute: RelationshipAttribute;
+  export let relatedEntity: EntitySchema;
 
   const relatedName = attribute.target ?? attribute.name;
-  const relatedEntity: EntitySchema = readSchema()[relatedName];
   const selectedIds = writable<string[]>(control.value);
 
   const { list, store, loadAllIfNecessary } = useEntity(relatedName);

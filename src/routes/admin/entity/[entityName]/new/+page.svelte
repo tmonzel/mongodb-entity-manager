@@ -5,11 +5,12 @@
 	import EntityForm from '$lib/entity/components/EntityForm.svelte';
 	import { createForm, getFormState, markAllAsTouched } from '$lib/form';
 	import { notify } from '$lib/notification';
-	import { readSchema } from '$lib/schema';
+	import type { PageData } from './$types';
+
+  export let data: PageData;
 
   const form = createForm();
-  const schema = readSchema();
-  const entity = schema[$page.params.entityName];
+  const entity = data.entity;
 
   async function submit() {
     if(!formState.valid) {
@@ -18,7 +19,7 @@
     }
 
     await actions.documents.create.mutate({ 
-      entityName: $page.params.entityName, 
+      entityName: entity.name, 
       data: formState.value 
     });
 
@@ -41,6 +42,6 @@
   <button class="btn btn-primary" on:click={submit} disabled={!formState.submittable}>Create</button>
 </div>
 
-<h1 class="mb-5">Create {entity.name}</h1>
+<h1 class="mb-5">Create {entity.type}</h1>
 
 <EntityForm bind:form={$form} schema={entity} />

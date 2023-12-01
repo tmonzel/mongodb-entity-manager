@@ -2,7 +2,6 @@
 	import { FormControl } from '$lib/form';
 	import { FormInput } from '$lib/form/components';
 	import type { EntityAttribute } from '$lib/entity/types';
-	import RelationshipAttribute from './RelationshipAttribute.svelte';
 	import FormSelect from '$lib/form/components/FormSelect.svelte';
 	import FormCheckbox from '$lib/form/components/FormCheckbox.svelte';
 	import { FormGroup } from '$lib/form/types';
@@ -46,7 +45,7 @@
 
     {:else if attribute.type === 'relationship:has-many'}
 
-      <RelationshipAttribute bind:control attribute={attribute} />
+      <!--<RelationshipAttribute bind:control attribute={attribute} /> -->
 
     {:else if attribute.type === 'relationship:has-one'}
 
