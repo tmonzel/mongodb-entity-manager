@@ -1,6 +1,15 @@
 import type { EntitySchema } from '$admin/types';
 
-export const PersonModel: EntitySchema = {
+export type Person = {
+  firstName: string;
+  lastName: string;
+  address: { 
+    street: string; 
+    postalCode: string; 
+  };
+}
+
+export const PersonSchema: EntitySchema = {
   name: 'persons',
   type: 'Person',
   description: 'A normal person with a first and lastname',

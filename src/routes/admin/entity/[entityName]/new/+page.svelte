@@ -10,7 +10,6 @@
   export let data: PageData;
 
   const form = createForm();
-  const entity = data.entity;
 
   async function submit() {
     if(!formState.valid) {
@@ -19,29 +18,29 @@
     }
 
     await actions.documents.create.mutate({ 
-      entityName: entity.name, 
+      entityName: data.entity.name, 
       data: formState.value 
     });
 
     notify({ 
       type: 'success', 
-      message: entity.name + ' created' 
+      message: data.entity.type + ' created' 
     });
 
     goto($page.url + '/..', { invalidateAll: true });
   }
-
+  
   $: formState = getFormState($form);
 </script>
 
-<div class="page-options">
+<div class="page-options justify-content-between">
   <a class="btn btn-light d-flex me-2" href="{$page.url + '/..'}">
     <span class="material-icons me-2">chevron_left</span>
-    List
+    {data.entity.collection.title}
   </a>
   <button class="btn btn-primary" on:click={submit} disabled={!formState.submittable}>Create</button>
 </div>
 
-<h1 class="mb-5">Create {entity.type}</h1>
+<h1 class="mb-5">New {data.entity.type}</h1>
 
-<EntityForm bind:form={$form} schema={entity} />
+<EntityForm bind:form={$form} schema={data.entity} />

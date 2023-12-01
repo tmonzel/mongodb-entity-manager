@@ -3,6 +3,8 @@
 	import type { LayoutData } from './$types';
 
   export let data: LayoutData;
+
+  const id = data.entity.identifiedBy ? data.document[data.entity.identifiedBy] : data.document.id;
 </script>
 
 <div class="page-options d-flex justify-content-between">
@@ -29,9 +31,22 @@
 </a>
 </div>
 
-<h1 class="mb-4">{data.entity.type}#{data.document.id}</h1>
+<h1 class="mb-4">{data.entity.type}#{id}</h1>
 
-<div>
-  Detailed Info
+{#if data.entity.detail}
+  {#if data.entity.detail.attributes}
+    <ul class="list-group">
+    {#each data.entity.detail.attributes as name}
+      {@const attr = data.entity.attributes.find(a => a.name === name)}
+      <li class="list-group-item" style="width: fit-content">
+        <strong>{attr?.label}</strong>: {data.document[name]}
+      </li>
+    {/each}
+    </ul>
+  {/if}
+{:else}
+<div class="alert alert-info">
+  No detailed view defined
 </div>
+{/if}
 

@@ -1,6 +1,6 @@
 import type { EntitySchema } from '$admin/types';
 
-export const ProjectModel: EntitySchema = {
+export const ProjectSchema: EntitySchema = {
   name: 'projects',
   type: 'Project',
   description: 'A task which a person can do',

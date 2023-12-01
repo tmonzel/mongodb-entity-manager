@@ -25,7 +25,7 @@
 
     notify({ 
       type: 'success', 
-      message: data.entity.name + ' saved' 
+      message: `${data.entity.type}#${data.document.id} saved`
     });
 
     goto($page.url + '/../..', { invalidateAll: true });
@@ -34,10 +34,10 @@
   $: formState = getFormState($form);
 </script>
 
-<div class="page-options">
+<div class="page-options justify-content-between">
   <a class="btn btn-light d-flex me-2" href="{$page.url + '/..'}">
     <span class="material-icons me-2">chevron_left</span>
-    Detail
+    {data.entity.type}
   </a>
 
   <button 

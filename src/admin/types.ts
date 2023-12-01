@@ -54,14 +54,20 @@ export type EntityCollection = {
   pageSize?: number;
 }
 
+export type EntityDetail = {
+  attributes: string[];
+}
+
 export type EntitySchema = {
   name: string;
   type: string;
   description?: string;
   renderAs?: string;
+  identifiedBy?: string;
   attributes: EntityAttribute[];
   nestedSchemata?: EntitySchema[];
   collection: EntityCollection;
+  detail?: EntityDetail;
 }
 
 export type CreateDocumentInput = {

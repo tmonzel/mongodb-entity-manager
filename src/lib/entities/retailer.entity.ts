@@ -1,6 +1,6 @@
 import type { EntitySchema } from '$admin/types';
 
-export const RetailerModel: EntitySchema = {
+export const RetailerSchema: EntitySchema = {
   name: 'retailers',
   type: 'Retailer',
   description: 'Ownes markets',

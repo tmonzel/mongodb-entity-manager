@@ -1,6 +1,11 @@
 import type { EntitySchema } from '$admin/types';
+import { MarketCustomerSchema } from './market-customer.entity';
 
-export const MarketModel: EntitySchema = {
+export type Market = {
+  name: string;
+}
+
+export const MarketSchema: EntitySchema = {
   name: 'markets',
   type: 'Market',
   description: 'Stores with SAP identification',
@@ -82,39 +87,14 @@ export const MarketModel: EntitySchema = {
     }*/
   ],
 
-  nestedSchemata: [
-    {
-      name: 'customers',
-      type: 'Customer',
-
-      attributes: [
-        {
-          name: 'firstName',
-          label: 'First Name',
-          type: 'text',
-          validations: {
-            required: true
-          }
-        },
-  
-        {
-          name: 'lastName',
-          label: 'Last Name',
-          type: 'text',
-          validations: {
-            required: true
-          }
-        }
-      ],
-
-      collection: {
-        title: 'Customers'
-      }
-    }
-  ],
+  nestedSchemata: [MarketCustomerSchema],
 
   collection: {
     title: 'Markets',
     columns: ['name', 'published', 'state']
   },
+
+  detail: {
+    attributes: ['state']
+  }
 }

@@ -1,15 +1,15 @@
 import type { EntitySchema } from '$admin/types';
-import { MarketModel } from '$lib/models/market.model';
-import { PersonModel } from '$lib/models/person.model';
-import { ProjectModel } from '$lib/models/project.model';
-import { RetailerModel } from '$lib/models/retailer.model';
+import { MarketSchema } from '$lib/entities/market.entity';
+import { PersonSchema } from '$lib/entities/person.entity';
+import { ProjectSchema } from '$lib/entities/project.entity';
+import { RetailerSchema } from '$lib/entities/retailer.entity';
 import { error } from '@sveltejs/kit';
 
 const Schemata: EntitySchema[] = [
-  PersonModel,
-  ProjectModel,
-  MarketModel,
-  RetailerModel,
+  PersonSchema,
+  ProjectSchema,
+  MarketSchema,
+  RetailerSchema,
 ];
 
 /** @type {import('./$types').PageServerLoad} */
