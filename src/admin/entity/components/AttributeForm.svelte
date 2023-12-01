@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Document } from 'mongodb';
-	import type { EntityAttribute } from '../types';
-	import { FormGroup, type Validator } from '$lib/form/types';
-	import { FormControl, Validators } from '$lib/form';
+	import type { EntityAttribute } from '../../types';
+	import { FormGroup, type Validator } from '$admin/form/types';
+	import { FormControl, Validators } from '$admin/form';
   
 	import Attribute from './Attribute.svelte';
 

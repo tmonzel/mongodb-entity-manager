@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Notification from '$lib/notification/Notification.svelte';
+	import Notification from '$admin/notification/Notification.svelte';
 </script>
 
 <svelte:head>

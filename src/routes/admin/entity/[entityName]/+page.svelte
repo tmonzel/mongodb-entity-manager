@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { EntityAttribute } from '$lib/entity/types';
+	import type { EntityAttribute } from '$admin/types';
 	import type { Document } from 'mongodb';
-  import type { PageData } from './$types';
-	import Dialog from '$lib/components/Dialog.svelte';
-	import { actions } from '$lib/actions';
+  import type { LayoutData } from './$types';
+	import Dialog from '$admin/components/Dialog.svelte';
+	import { actions } from '$admin/actions';
 	import { invalidateAll } from '$app/navigation';
 
-  export let data: PageData;
+  export let data: LayoutData;
 
   let deleteDialog: Dialog;
   let attributesByName: { [name: string]: EntityAttribute } = {}

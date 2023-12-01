@@ -1,6 +1,6 @@
 
-import { defaultCaller } from '$lib/router';
-import { mapDocument } from '$lib/data';
+import { defaultCaller } from '$admin/router';
+import { mapDocument } from '$admin/data';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */

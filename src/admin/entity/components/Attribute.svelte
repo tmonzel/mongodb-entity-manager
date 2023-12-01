@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { FormControl } from '$lib/form';
-	import { FormInput } from '$lib/form/components';
-	import type { EntityAttribute } from '$lib/entity/types';
-	import FormSelect from '$lib/form/components/FormSelect.svelte';
-	import FormCheckbox from '$lib/form/components/FormCheckbox.svelte';
-	import { FormGroup } from '$lib/form/types';
+	import { FormControl } from '$admin/form';
+	import { FormInput } from '$admin/form/components';
+	import type { EntityAttribute } from '$admin/types';
+	import FormSelect from '$admin/form/components/FormSelect.svelte';
+	import FormCheckbox from '$admin/form/components/FormCheckbox.svelte';
+	import { FormGroup } from '$admin/form/types';
 	import NestedAttributeForm from './NestedAttributeForm.svelte';
 
   export let control: FormControl | FormControl[] | FormGroup;

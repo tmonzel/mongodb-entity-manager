@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Document } from 'mongodb';
-	import type { EntitySchema } from '../types';
-	import type { FormGroup } from '$lib/form/types';
+	import type { EntitySchema } from '../../types';
+	import type { FormGroup } from '$admin/form/types';
 	import AttributeForm from './AttributeForm.svelte';
 
   export let schema: EntitySchema;

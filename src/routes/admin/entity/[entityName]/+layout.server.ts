@@ -1,11 +1,13 @@
 
-import { defaultCaller } from '$lib/router';
-import { loadEntity } from '$lib/schema';
+import { defaultCaller } from '$admin/router';
+import type { EntitySchema } from '$admin/types';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load(event) {
-	const entity = await loadEntity(event.params.entityName);
+	const parentData = await event.parent();
+
+	const entity = parentData.schemata.find(s => s.name === event.params.entityName);
 
 	if(!entity) {
 		throw error(404, 'Entity not found');
@@ -18,7 +20,7 @@ export async function load(event) {
 	}
 
 	return {
-		entity,
+		entity: entity as EntitySchema,
 		documents
 	};
 }

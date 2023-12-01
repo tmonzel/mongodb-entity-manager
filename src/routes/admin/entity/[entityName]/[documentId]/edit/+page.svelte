@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { actions } from '$lib/actions';
-	import EntityForm from '$lib/entity/components/EntityForm.svelte';
-	import { createForm, getFormState, markAllAsTouched } from '$lib/form';
-	import { notify } from '$lib/notification';
+	import { actions } from '$admin/actions';
+	import EntityForm from '$admin/entity/components/EntityForm.svelte';
+	import { createForm, getFormState, markAllAsTouched } from '$admin/form';
+	import { notify } from '$admin/notification';
 	import type { PageData } from './$types';
 
   export let data: PageData;

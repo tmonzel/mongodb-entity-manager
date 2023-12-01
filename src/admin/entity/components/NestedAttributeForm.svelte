@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { markAllAsTouched, type FormControl, getFormState, createForm } from '$lib/form';
+	import { markAllAsTouched, type FormControl, getFormState, createForm } from '$admin/form';
 	import { writable } from 'svelte/store';
-	import type { EntityAttribute } from '../types';
+	import type { EntityAttribute } from '../../types';
 	import type { Document } from 'mongodb';
 	import { onDestroy } from 'svelte';
-	import Dialog from '$lib/components/Dialog.svelte';
+	import Dialog from '$admin/components/Dialog.svelte';
 	import AttributeForm from './AttributeForm.svelte';
 
   export let attributes: EntityAttribute[];

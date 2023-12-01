@@ -1,9 +1,10 @@
-import type { EntitySchema } from '$lib/entity/types';
+import type { EntitySchema } from '$admin/types';
 
 export const MarketModel: EntitySchema = {
   name: 'markets',
   type: 'Market',
   description: 'Stores with SAP identification',
+
   attributes: [
     {
       name: 'name',

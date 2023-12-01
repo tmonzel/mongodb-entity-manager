@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { FormControl } from '$lib/form';
+	import type { FormControl } from '$admin/form';
 	import { onDestroy, onMount } from 'svelte';
-	import type { EntitySchema, RelationshipAttribute } from '../types';
-	import { useEntity } from '$lib/actions';
+	import type { EntitySchema, RelationshipAttribute } from '../../types';
+	import { useEntity } from '$admin/actions';
 	import type { Document } from 'mongodb';
 	import { derived, writable } from 'svelte/store';
 
@@ -65,7 +65,7 @@
 </script>
 
 <div class="form-label mb-2">
-  {attribute.label ?? relatedEntity?.list.title}
+  {attribute.label ?? relatedEntity?.collection.title}
 </div>
 
 {#if $selectedDocuments.length > 0}
@@ -83,7 +83,7 @@
   <div class="alert alert-info d-flex align-items-center" role="alert">
     <span class="material-icons me-2">info</span>
     <div>
-      No {attribute.label ?? relatedEntity?.list.title} referenced
+      No {attribute.label ?? relatedEntity?.collection.title} referenced
     </div>
   </div>
 {/if}

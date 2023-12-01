@@ -1,4 +1,4 @@
-import type { EntitySchema } from '$lib/entity/types';
+import type { EntitySchema } from '$admin/types';
 
 export const ProjectModel: EntitySchema = {
   name: 'projects',

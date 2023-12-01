@@ -1,6 +1,6 @@
-import { DataSource, mapDocument } from '$lib/data';
-import { createRouter, publicProcedure } from '$lib/rpc';
-import type { CreateDocumentInput, UpdateDocumentInput } from './types';
+import { DataSource, mapDocument } from '$admin/data';
+import { createRouter, publicProcedure } from '$admin/rpc';
+import type { CreateDocumentInput, UpdateDocumentInput } from '../types';
 import { ObjectId } from 'mongodb';
 
 export const documents = createRouter({

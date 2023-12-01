@@ -60,21 +60,8 @@ export type EntitySchema = {
   description?: string;
   renderAs?: string;
   attributes: EntityAttribute[];
-  nestedSchemata?: NestedEntitySchema[];
+  nestedSchemata?: EntitySchema[];
   collection: EntityCollection;
-}
-
-export type NestedEntitySchema = {
-  name: string;
-  type: string;
-  attributes: EntityAttribute[];
-  collection: EntityCollection;
-}
-
-export type Entity = {
-  name: string;
-  schema: EntitySchema;
-  documents: Document[];
 }
 
 export type CreateDocumentInput = {
