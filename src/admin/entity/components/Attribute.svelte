@@ -6,6 +6,7 @@
 	import FormCheckbox from '$admin/form/components/FormCheckbox.svelte';
 	import { FormGroup } from '$admin/form/types';
 	import NestedAttributeForm from './NestedAttributeForm.svelte';
+	import RelationshipAttribute from './RelationshipAttribute.svelte';
 
   export let control: FormControl | FormControl[] | FormGroup;
   export let attribute: EntityAttribute;
@@ -45,7 +46,7 @@
 
     {:else if attribute.type === 'relationship:has-many'}
 
-      <!--<RelationshipAttribute bind:control attribute={attribute} /> -->
+      <RelationshipAttribute bind:control {attribute} />
 
     {:else if attribute.type === 'relationship:has-one'}
 
@@ -53,16 +54,7 @@
         bind:control 
         label={attribute.label} 
       />
-
-      <!--<div class="multiselect">
-        <input class="dropdown-toggle">
       
-        <ul class="dropdown-menu show">
-          <li><a class="dropdown-item" href="#">Action</a></li>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><a class="dropdown-item" href="#">Something else here</a></li>
-        </ul>
-      </div>-->
     {/if}
   {/if}
   
