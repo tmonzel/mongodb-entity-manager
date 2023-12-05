@@ -9,7 +9,16 @@ export const RetailerSchema: EntitySchema = {
     {
       name: 'name',
       label: 'Name',
-      type: 'text'
+      type: 'text',
+      validations: {
+        required: true
+      }
+    },
+
+    {
+      name: 'markets',
+      label: 'Markets',
+      type: 'relationship:has-many',
     }
   ],
 

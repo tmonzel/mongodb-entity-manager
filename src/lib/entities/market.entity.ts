@@ -9,6 +9,7 @@ export const MarketSchema: EntitySchema = {
   name: 'markets',
   type: 'Market',
   description: 'Stores with SAP identification',
+  renderAs: '{name}',
 
   attributes: [
     {
