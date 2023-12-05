@@ -7,8 +7,8 @@
 
 <div class="row">
 	{#each data.schemata as entity}
-	<div class="col-md-4 mb-4">
-		<a class="card" href="{$page.url}/entity/{entity.name}">
+	<div class="col-md-3 mb-4">
+		<a class="card" href="{$page.url}/entity/{entity.name}" style="min-height: 150px;">
 			<div class="card-body">
 				<h5 class="card-title">{entity.type}</h5>
 				<!--<h6 class="card-subtitle mb-2 text-body-secondary">{name}</h6>-->

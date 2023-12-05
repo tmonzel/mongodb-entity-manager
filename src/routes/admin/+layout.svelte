@@ -1,5 +1,11 @@
 <script lang="ts">
 	import Notification from '$admin/notification/Notification.svelte';
+	import { setContext } from 'svelte';
+	import type { LayoutData } from './$types';
+
+	export let data: LayoutData;
+
+	setContext('schemata', data.schemata);
 </script>
 
 <svelte:head>
