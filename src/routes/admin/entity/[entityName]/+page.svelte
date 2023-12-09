@@ -1,29 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { EntityAttribute } from '$admin/types';
 	import type { Document } from 'mongodb';
   import type { LayoutData } from './$types';
 	import Dialog from '$admin/components/Dialog.svelte';
-	import { actions } from '$admin/actions';
+	import { actions, renderAttributeLabel, renderAttributeValue } from '$admin/client';
 	import { invalidateAll } from '$app/navigation';
 	import { notify } from '$admin/notification';
 
   export let data: LayoutData;
 
+  const columns: string[] = data.entity.collection.columns ?? Object.keys(data.entity.attributes);
+
   let deleteDialog: Dialog;
-  let attributesByName: { [name: string]: EntityAttribute } = {}
-  let columns: string[] = data.entity.collection.columns ?? data.entity.attributes.map(attr => attr.name);
-  
-  for(const attr of data.entity.attributes) {
-    attributesByName[attr.name] = attr;
-  }
 
   function openDeleteDialog(doc: Document): void {
     deleteDialog.open(doc);
   }
 
   async function deleteDocument(id: string): Promise<void> {
-    await actions.documents.deleteOne.mutate({ id, name: data.entity.name });
+    await actions.documents.deleteOne.mutate({ id, name: $page.params.entityName });
 
     notify({ 
       type: 'success', 
@@ -33,20 +28,6 @@
     deleteDialog.close();
     invalidateAll();
   }
-
-  function renderCell(column: string, doc: Document): string {
-    const attr = attributesByName[column];
-
-    if(attr.type === 'object' && attr.renderAs) {
-      return attr.renderAs.replace(/(\{([a-zA-Z]+)\})+/g, (match, ...groups) => {
-        const attrName = groups[1];
-        
-        return doc[column] && doc[column][attrName] ? doc[column][attrName] : '-';
-      });
-    }
-
-    return doc[column] ?? '-'
-  }
 </script>
 
 <div class="page-options justify-content-between">
@@ -54,7 +35,7 @@
     <span class="material-icons me-2">chevron_left</span>
     Entities
   </a>
-  <a class="btn btn-primary" href="{$page.url}/new">+ Add {data.entity.type}</a>
+  <a class="btn btn-primary" href="{$page.url}/new">+ New {data.entity.type}</a>
 </div>
 
 <h1>{data.entity.collection.title}</h1>
@@ -65,7 +46,7 @@
     <tr>
       <th>#</th>
       {#each columns as col}
-      <th>{attributesByName[col].label}</th>
+      <th>{renderAttributeLabel(data.entity, col)}</th>
       {/each}
       <th></th>
     </tr>
@@ -76,7 +57,7 @@
     <tr>
       <td style="width: 20%;">{doc.id}</td>
       {#each columns as col}
-      <td>{renderCell(col, doc)}</td>
+      <td>{renderAttributeValue(data.entity, col, doc)}</td>
       {/each}
       <td style="width: 1%">
         <div class="d-flex">

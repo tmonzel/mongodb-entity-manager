@@ -2,14 +2,20 @@ import type { Dict } from '@trpc/server';
 import { resolveHTTPResponse } from '@trpc/server/http';
 import { router } from '$admin/router';
 import { RPC_URL } from '$admin/constants';
-import { DataSource } from '$admin/data';
+import { initializeAdmin } from '$admin/server';
+import { CustomerEntity } from '$lib/entities/customer.entity';
+import { ProductEntity } from '$lib/entities/product.entity';
+import { OrderEntity } from '$lib/entities/order.entity';
 
-// Connect to MongoDB before starting the server
-DataSource.connect().then(():void => {
-	console.log("MongoDB started");
-}).catch((e) => {
-	console.log("MongoDB failed to start");
-	console.log(e);
+// Setup all admin data
+initializeAdmin({
+	schema: {
+		customers: CustomerEntity,
+		products: ProductEntity,
+		orders: OrderEntity,
+	},
+
+	dashboard: ['customers', 'products', 'orders']
 });
 
 /** @type {import('@sveltejs/kit').Handle} */

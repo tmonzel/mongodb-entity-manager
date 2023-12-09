@@ -1,27 +1,39 @@
 import type { Document } from 'mongodb';
 
-export type DataSchema = {
-  [entityName: string]: EntitySchema;
+export type AdminConfig = {
+  // All defined entities
+  schema: EntitySchema;
+
+  // All navigatable entities showing on the dashboard by name 
+  dashboard: string[]
+}
+
+export type EntitySchema = {
+  [entityName: string]: Entity;
 }
 
 export interface RelationshipAttribute {
   type: 'relationship:has-many' | 'relationship:has-one';
-  name: string;
   label?: string;
   target?: string;
 }
 
 export interface ObjectAttribute {
   type: 'object' | 'array';
-  name: string;
   label?: string;
   renderAs?: string;
-  attributes: EntityAttribute[];
+  attributes: { [name: string]: EntityAttribute };
+  form?: string[];
+}
+
+export interface EmbedAttribute {
+  type: 'embed',
+  label?: string;
+  entity: AbstractEntity;
 }
 
 export interface SwitchAttribute {
   type: 'switch';
-  name: string;
   label: string;
   value?: boolean;
   validations?: { [name: string]: string | boolean };
@@ -30,22 +42,21 @@ export interface SwitchAttribute {
 
 export interface SelectAttribute {
   type: 'select';
-  name: string;
   label?: string;
-  options: { name: string; value: string | number | null; }[];
+  multiple?: boolean;
+  options: { name: string; value: any; }[];
   validations?: { [name: string]: string | boolean };
   default?: boolean;
 }
 
 export interface InputAttribute {
   type: 'text' | 'number';
-  name: string;
   label?: string;
   validations?: { [name: string]: string | boolean };
   default?: string | number;
 }
 
-export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute | SwitchAttribute | SelectAttribute;
+export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute | SwitchAttribute | SelectAttribute | EmbedAttribute;
 
 export type EntityCollection = {
   title: string;
@@ -55,18 +66,21 @@ export type EntityCollection = {
 }
 
 export type EntityDetail = {
-  attributes: string[];
+  attributes?: string[];
 }
 
-export type EntitySchema = {
-  name: string;
+export interface AbstractEntity {
   type: string;
+  attributes: { [name: string]: EntityAttribute };
+  collection: EntityCollection;
+  form?: string[];
+}
+
+export interface Entity extends AbstractEntity {
   description?: string;
   renderAs?: string;
   identifiedBy?: string;
-  attributes: EntityAttribute[];
-  nestedSchemata?: EntitySchema[];
-  collection: EntityCollection;
+  nestedSchemata?: Entity[];
   detail?: EntityDetail;
 }
 

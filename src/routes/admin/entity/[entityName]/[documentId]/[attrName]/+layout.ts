@@ -1,4 +1,4 @@
-import type { EntitySchema } from '$admin/types';
+import type { Entity } from '$admin/types';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageLoad} */
@@ -16,6 +16,6 @@ export async function load({ params, parent }) {
   }
 
 	return {
-		nestedSchema: nestedSchema as EntitySchema
+		nestedSchema: nestedSchema as Entity
 	};
 }

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { FormControl } from '$admin/form';
-	import { FormInput } from '$admin/form/components';
+	import { FormInput, FormSelect } from '$admin/form/components';
 	import type { EntityAttribute } from '$admin/types';
-	import FormSelect from '$admin/form/components/FormSelect.svelte';
 	import FormCheckbox from '$admin/form/components/FormCheckbox.svelte';
 	import { FormGroup } from '$admin/form/types';
-	import NestedAttributeForm from './NestedAttributeForm.svelte';
 	import RelationshipAttribute from './RelationshipAttribute.svelte';
+	import EmbedAttributeForm from './EmbedAttributeForm.svelte';
 
+  export let key: string;
   export let control: FormControl | FormControl[] | FormGroup;
   export let attribute: EntityAttribute;
 </script>
@@ -21,12 +21,14 @@
         type={attribute.type} 
         label={attribute.label}
       />
-    {:else if attribute.type === 'select'}
       
+    {:else if attribute.type === 'select'}
+
       <FormSelect 
-        bind:control
-        options={attribute.options}
-        label={attribute.label}
+        bind:control 
+        multiple={attribute.multiple}
+        options={attribute.options} 
+        label={attribute.label} 
       />
 
     {:else if attribute.type === 'switch'}
@@ -36,38 +38,33 @@
         label={attribute.label}
       />
 
-    {:else if attribute.type === 'array'}
+    {:else if attribute.type === 'embed'}
 
-      <NestedAttributeForm 
-        bind:control 
-        attributes={attribute.attributes} 
-        label={attribute.label} 
-      />
+      <EmbedAttributeForm bind:control entity={attribute.entity} />
 
     {:else if attribute.type === 'relationship:has-many'}
 
-      <RelationshipAttribute bind:control {attribute} />
+      <RelationshipAttribute bind:control {key} {attribute} />
 
     {:else if attribute.type === 'relationship:has-one'}
 
-      <FormSelect 
+      <!--<FormSelect 
         bind:control 
         label={attribute.label} 
-      />
-      
+      />-->
+       
     {/if}
-  {/if}
   
-  {#if control instanceof FormGroup && attribute.type === 'object' && attribute.attributes}
+  {:else if control instanceof FormGroup && attribute.type === 'object'}
     
     <div class="bg-light p-3">
       <div class="mb-2">
         <small class="text-muted">{attribute.label}</small>
       </div>
       <div class="row">
-        {#each attribute.attributes as attr, i}
+        {#each Object.entries(attribute.attributes) as [key, attr]}
           <div class="col">
-            <svelte:self bind:control={control[attr.name]} attribute={attr} />
+            <svelte:self bind:control={control[key]} {key} attribute={attr} />
           </div>
         {/each}
       </div>

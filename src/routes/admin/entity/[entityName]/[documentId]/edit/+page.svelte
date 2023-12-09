@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { actions } from '$admin/actions';
+	import { actions } from '$admin/client';
 	import EntityForm from '$admin/entity/components/EntityForm.svelte';
 	import { createForm, getFormState, markAllAsTouched } from '$admin/form';
 	import { notify } from '$admin/notification';
@@ -53,6 +53,6 @@
 
 <EntityForm 
   bind:form={$form} 
-  schema={data.entity} 
+  entity={data.entity} 
   value={data.document} 
 />

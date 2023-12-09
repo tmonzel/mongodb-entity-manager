@@ -1,7 +1,55 @@
-import { DataSource, mapDocument } from '$admin/data';
+import { getCollection } from '$admin/data';
 import { createRouter, publicProcedure } from '$admin/rpc';
-import type { CreateDocumentInput, UpdateDocumentInput } from '../types';
-import { ObjectId } from 'mongodb';
+import { getEntity } from '$admin/server';
+import type { CreateDocumentInput, Entity, UpdateDocumentInput } from '../types';
+import { ObjectId, type Document } from 'mongodb';
+
+async function loadRelatedDocuments(targetEntityName: string, doc: Document): Promise<Document[]> {
+  const collection = getCollection(targetEntityName);
+  const $in = doc[targetEntityName] as ObjectId[];
+  const documents = await collection.find({ _id: { $in }}).toArray();
+
+  return documents.map(doc => normalizeDocument(doc));
+}
+
+function normalizeDocument(doc: Document): Document {
+  if(doc['_id'] !== undefined) {
+    doc['id'] = doc['_id'] + '';
+    delete doc['_id'];
+  }
+
+  return doc;
+}
+
+export async function resolveDocument(entity: Entity, doc: Document): Promise<Document> {
+  for(const [key, attribute] of Object.entries(entity.attributes)) {
+    switch(attribute.type) {
+      case 'relationship:has-many':
+        doc[key] = await loadRelatedDocuments(attribute.target ?? key, doc);
+    }
+  }
+
+  return normalizeDocument(doc);
+}
+
+export function denormalizeDocument(entity: Entity, data: any): Document {
+  const result: Document = {};
+
+  for(const [key, attr] of Object.entries(entity.attributes)) {
+    switch(attr.type) {
+      case 'relationship:has-many':
+        result[key] = (data[key] as string[]).map(id => new ObjectId(id))
+        break;
+      case 'relationship:has-one':
+          result[key] = new ObjectId(data[key])
+          break;
+      default:
+        result[key] = data[key]
+    }
+  }
+
+  return result;
+}
 
 export const documents = createRouter({
 	loadAll: publicProcedure.input((name: unknown) => {
@@ -10,10 +58,11 @@ export const documents = createRouter({
       throw new Error(`Invalid input: ${typeof name}`);
     }).query(async({ input }) => {
 
-    const collection = DataSource.getCollection(input);
+    const collection = getCollection(input);
     const documents = await collection.find({}).toArray();
+    const entity = getEntity(input);
 
-		return documents.map(doc => mapDocument(doc));
+		return Promise.all(documents.map(doc => resolveDocument(entity, doc)));
 	}),
 
   loadOne: publicProcedure.input((input: unknown) => {
@@ -22,9 +71,16 @@ export const documents = createRouter({
     }).query(async({ input }) => {
 
     
-    const collection = DataSource.getCollection(input.name);
+    const collection = getCollection(input.name);
+    const doc = await collection.findOne({ _id: new ObjectId(input.id) });
+
+    if(!doc) {
+      throw new Error(`Document not found`);
+    }
+
+    const entity = getEntity(input.name);
   
-    return collection.findOne({ _id: new ObjectId(input.id) });
+    return await resolveDocument(entity, doc);
   }),
 
   deleteOne: publicProcedure.input((input: unknown) => {
@@ -33,7 +89,7 @@ export const documents = createRouter({
     }).mutation(async({ input }) => {
 
     
-    const collection = DataSource.getCollection(input.name);
+    const collection = getCollection(input.name);
   
     await collection.deleteOne({ _id: new ObjectId(input.id) });
   }),
@@ -45,9 +101,13 @@ export const documents = createRouter({
 			throw new Error(`Invalid input: ${typeof data}`);
 		})
 		.mutation(async ({ input }) => {
-      const collection = DataSource.getCollection(input.entityName);
+      const entity = getEntity(input.entityName);
+      const collection = getCollection(input.entityName);
       
-      await collection.updateOne({ _id: new ObjectId(input.id) }, { $set: input.changes });
+      await collection.updateOne(
+        { _id: new ObjectId(input.id) }, 
+        { $set: denormalizeDocument(entity, input.changes) }
+      );
 		}),
 
   create: publicProcedure
@@ -57,15 +117,9 @@ export const documents = createRouter({
 			throw new Error(`Invalid input: ${typeof data}`);
 		})
 		.mutation(async ({ input }) => {
-      const collection = DataSource.getCollection(input.entityName);
+      const entity = getEntity(input.entityName);
+      const collection = getCollection(input.entityName);
       
-      
-      if(input.data.id) {
-        // Update
-        await collection.updateOne({ _id: new ObjectId(input.data.id) }, { $set: input.data });
-      } else {
-        // Insert
-        await collection.insertOne(input.data);
-      }
+      await collection.insertOne(denormalizeDocument(entity, input.data));
 		})
 });

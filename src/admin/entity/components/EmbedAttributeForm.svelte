@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { markAllAsTouched, type FormControl, getFormState, createForm } from '$admin/form';
 	import { writable } from 'svelte/store';
-	import type { EntityAttribute } from '../../types';
+	import type { AbstractEntity } from '$admin/types';
 	import type { Document } from 'mongodb';
 	import { onDestroy } from 'svelte';
 	import Dialog from '$admin/components/Dialog.svelte';
-	import AttributeForm from './AttributeForm.svelte';
+	import EntityForm from './EntityForm.svelte';
 
-  export let attributes: EntityAttribute[];
+  export let entity: AbstractEntity;
   export let control: FormControl<Document[]>;
-  export let label: string = '';
   
   const form = createForm();
   const values = writable<Document[]>(control.value);
@@ -63,14 +62,14 @@
 
 <div class="bg-light p-3">
   <div class="mb-2">
-    <small class="text-muted">{label}</small>
+    <small class="text-muted">{entity.collection.title}</small>
   </div>
 
   <table class="table">
     <thead>
       <tr>
-        {#each attributes as attr}
-        <th>{attr.label}</th>
+        {#each Object.entries(entity.attributes) as [name, attr]}
+        <th>{attr.label ?? name}</th>
         {/each}
         <th></th>
       </tr>
@@ -79,8 +78,8 @@
     <tbody>
       {#each $values as value, index}
       <tr>
-        {#each attributes as attr}
-        <td>{value[attr.name]}</td>
+        {#each Object.keys(entity.attributes) as name}
+        <td>{value[name]}</td>
         {/each}
         <td style="width: 1%">
           <div class="d-flex">
@@ -112,7 +111,7 @@
       Update Prop
     </svelte:fragment>
 
-    <AttributeForm bind:form={$form} {attributes} value={editableDocument} />
+    <EntityForm bind:form={$form} {entity} value={editableDocument} />
 
     <svelte:fragment slot="footer">
       <button class="btn btn-primary" disabled={!formState.submittable} on:click={() => save()}>
@@ -127,7 +126,7 @@
       Create Prop
     </svelte:fragment>
 
-    <AttributeForm bind:form={$form} {attributes} />
+    <EntityForm bind:form={$form} {entity} />
 
     <svelte:fragment slot="footer">
       <button class="btn btn-primary" disabled={!formState.submittable} on:click={() => save()}>

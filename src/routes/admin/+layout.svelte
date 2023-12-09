@@ -5,7 +5,7 @@
 
 	export let data: LayoutData;
 
-	setContext('schemata', data.schemata);
+	setContext('schema', data.config.schema);
 </script>
 
 <svelte:head>

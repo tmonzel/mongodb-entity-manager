@@ -37,7 +37,7 @@
   {#if data.entity.detail.attributes}
     <ul class="list-group">
     {#each data.entity.detail.attributes as name}
-      {@const attr = data.entity.attributes.find(a => a.name === name)}
+      {@const attr = data.entity.attributes[name]}
       <li class="list-group-item" style="width: fit-content">
         <strong>{attr?.label}</strong>: {data.document[name]}
       </li>

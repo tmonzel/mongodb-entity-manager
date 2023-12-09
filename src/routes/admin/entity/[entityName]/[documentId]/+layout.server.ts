@@ -1,6 +1,5 @@
 
 import { defaultCaller } from '$admin/router';
-import { mapDocument } from '$admin/data';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
@@ -10,11 +9,9 @@ export async function load(event) {
 		name: event.params.entityName 
 	});
 
-	if(document) {
-		return {
-			document: mapDocument(document)
-		};
+	if(!document) {
+		throw error(404, 'Document not found');
 	}
 
-	throw error(404, 'Document not found');
+	return { document };
 }

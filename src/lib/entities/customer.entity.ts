@@ -1,6 +1,6 @@
-import type { EntitySchema } from '$admin/types';
+import type { Entity } from '$admin/types';
 
-export type Person = {
+export type Customer = {
   firstName: string;
   lastName: string;
   address: { 
@@ -9,14 +9,12 @@ export type Person = {
   };
 }
 
-export const PersonSchema: EntitySchema = {
-  name: 'persons',
-  type: 'Person',
-  description: 'A normal person with a first and lastname',
+export const CustomerEntity: Entity = {
+  type: 'Customer',
+  description: 'Can purchase products',
   
-  attributes: [
-    {
-      name: 'firstName',
+  attributes: {
+    firstName: {
       label: 'First Name',
       type: 'text',
       validations: {
@@ -24,8 +22,7 @@ export const PersonSchema: EntitySchema = {
       }
     },
 
-    {
-      name: 'lastName',
+    lastName: {
       label: 'Last Name',
       type: 'text',
       validations: {
@@ -33,34 +30,30 @@ export const PersonSchema: EntitySchema = {
       }
     },
 
-    {
-      name: 'address',
+    address: {
       label: 'Address',
       type: 'object',
       renderAs: '{street} {postalCode}',
-      attributes: [
-        {
-          name: 'street',
+      attributes: {
+        street: {
           label: 'Street',
           type: 'text',
         },
   
-        {
-          name: 'postalCode',
+        postalCode: {
           label: 'Postal code',
           type: 'text',
         }
-      ]
+      }
     },
+  },
 
-    {
-      name: 'projects',
-      type: 'relationship:has-many',
-    }
-  ],
+  // Configurate Detail View
+  detail: {},
 
+  // Configurate Collection View
   collection: {
-    title: 'Persons',
+    title: 'Customers',
     columns: ['firstName', 'lastName', 'address']
   }
 }
