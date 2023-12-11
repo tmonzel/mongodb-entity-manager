@@ -1,20 +1,15 @@
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import type { Router } from './router';
-import { RPC_URL } from './constants';
+import type { Entity } from '$admin/types';
 import type { Document } from 'mongodb';
-import type { Entity, EntitySchema } from './types';
-import { getContext } from 'svelte';
-import { humanize } from './entity/utils';
+import { getEntitySchema } from './context';
 
-export const actions = createTRPCProxyClient<Router>({
-	links: [
-		httpBatchLink({
-			url: RPC_URL
-		})
-	]
-});
+export function humanize(str: string) {
+  return str
+      .replace(/^[\s_]+|[\s_]+$/g, '')
+      .replace(/[_\s]+/g, ' ')
+      .replace(/^[a-z]/, (m) => m.toUpperCase());
+}
 
-function renderDocument(str: string, doc: Document): string {
+export function renderDocument(str: string, doc: Document): string {
   return str.replace(/(\{([a-zA-Z]+)\})+/g, (match, ...groups) => {
     const attrName = groups[1];
     
@@ -60,8 +55,4 @@ export function renderAttributeLabel(entity: Entity, key: string): string {
   const attr = entity.attributes[key];
   
   return attr.label ?? humanize(key); 
-}
-
-export function getEntitySchema(): EntitySchema {
-  return getContext<EntitySchema>('schema');
 }

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { FormControl } from '$admin/form';
-	import type { RelationshipAttribute } from '../../types';
+	import type { RelationshipAttribute } from '../types';
 	import { FormSelect } from '$admin/form/components';
 	import { actions } from '$admin/client';
-	import { humanize } from '../utils';
+	import { humanize } from '../client/helpers';
 
   export let key: string;
   export let control: FormControl<string[]>;

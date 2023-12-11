@@ -1,8 +1,8 @@
 import type { Entity } from '$admin/types';
 import type { Document } from 'mongodb';
 import type { Customer } from './customer.entity';
-import type { ProductVariant } from './product.entity';
-import type { Mutations } from '$admin/entity/types';
+import type { Product, ProductVariant } from './product.entity';
+import type { Mutations } from '$admin/server/types';
 
 export type Order = {
   customer: Customer;
@@ -12,6 +12,7 @@ export type Order = {
 }
 
 export type OrderItem = {
+  product: Product;
   productVariant: ProductVariant;
   price: number;
 }
@@ -27,6 +28,24 @@ export const OrderEntity: Entity = {
       label: 'Customer' 
     },
 
+    items: {
+      type: 'embed',
+      entity: {
+        type: 'OrderItem',
+        attributes: {
+          product: {
+            type: 'relationship:has-one',
+            target: 'products',
+            label: 'Products'
+          }
+        },
+
+        collection: {
+          title: 'Items'
+        }
+      }
+    },
+
     totalPrice: {
       type: 'number',
       label: 'Total Price'
@@ -38,7 +57,7 @@ export const OrderEntity: Entity = {
     },
   },
 
-  form: ['customer'],
+  form: ['customer', 'items'],
 
   collection: {
     title: 'Orders',

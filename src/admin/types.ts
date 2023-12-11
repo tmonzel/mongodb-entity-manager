@@ -1,5 +1,4 @@
-import type { Document } from 'mongodb';
-import type { DocumentResolver } from './entity/types';
+import type { DocumentResolver } from './server/types';
 
 export type AdminConfig = {
   // All defined entities
@@ -84,16 +83,4 @@ export interface Entity extends AbstractEntity {
   identifiedBy?: string;
   nestedSchemata?: Entity[];
   detail?: EntityDetail;
-}
-
-export type CreateDocumentInput = {
-  entityName: string;
-  data: Document;
-}
-
-export type UpdateDocumentInput = {
-  entityName: string;
-
-  id: string;
-  changes: Partial<Document>;
 }

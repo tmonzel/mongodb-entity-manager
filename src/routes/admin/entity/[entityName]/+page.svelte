@@ -3,9 +3,10 @@
 	import type { Document } from 'mongodb';
   import type { LayoutData } from './$types';
 	import Dialog from '$admin/components/Dialog.svelte';
-	import { actions, renderAttributeLabel, renderAttributeValue } from '$admin/client';
+	import { renderAttributeLabel, renderAttributeValue } from '$admin/client/helpers';
 	import { invalidateAll } from '$app/navigation';
 	import { notify } from '$admin/notification';
+	import { actions } from '$admin/client';
 
   export let data: LayoutData;
 

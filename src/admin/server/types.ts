@@ -10,3 +10,15 @@ export type DocumentResolver = {
   normalize?: DocumentNormalizer;
   denormalize?: DocumentDenormalizer
 }
+
+export type CreateDocumentInput = {
+  entityName: string;
+  data: Document;
+}
+
+export type UpdateDocumentInput = {
+  entityName: string;
+
+  id: string;
+  changes: Partial<Document>;
+}

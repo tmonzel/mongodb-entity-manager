@@ -6,7 +6,7 @@
 	import { onDestroy } from 'svelte';
 	import Dialog from '$admin/components/Dialog.svelte';
 	import EntityForm from './EntityForm.svelte';
-	import { renderAttributeLabel, renderAttributeValue } from '$admin/client';
+	import { renderAttributeLabel, renderAttributeValue } from '$admin/client/helpers';
 
   export let entity: AbstractEntity;
   export let control: FormControl<Document[]>;

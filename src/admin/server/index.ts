@@ -1,6 +1,8 @@
 import { establishConnection } from './data';
-import type { DocumentResolver } from './entity/types';
-import type { AdminConfig, Entity } from './types';
+import type { DocumentResolver } from './types';
+import type { AdminConfig, Entity } from '../types';
+
+export * from './data';
 
 let configuration: AdminConfig;
 

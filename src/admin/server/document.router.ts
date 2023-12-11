@@ -1,18 +1,21 @@
-import { getCollection } from '$admin/data';
+import { getCollection } from './data';
 import { createRouter, publicProcedure } from '$admin/rpc';
 import { getEntity, getResolver } from '$admin/server';
-import type { CreateDocumentInput, EntityAttributeMap, UpdateDocumentInput } from '../types';
+import type { CreateDocumentInput, UpdateDocumentInput } from './types';
 import { ObjectId, type Document } from 'mongodb';
 import type { Mutations, Queries } from './types';
+import type { EntityAttributeMap } from '../types';
 
 async function loadHasMany(entityName: string, ids: ObjectId[], query: Queries): Promise<Document[]> {
+  const entity = getEntity(entityName);
   const collection = getCollection(entityName);
   const documents = await collection.find({ _id: { $in: ids }}).toArray();
 
-  return documents.map(doc => normalizeDocument(entityName, doc, query));
+  return documents.map(doc => normalizeDocument(entityName, entity.attributes, doc, query));
 }
 
 async function loadHasOne(entityName: string, id: ObjectId, query: Queries): Promise<Document> {
+  const entity = getEntity(entityName);
   const collection = getCollection(entityName);
   const document = await collection.findOne({ _id: id });
 
@@ -20,21 +23,10 @@ async function loadHasOne(entityName: string, id: ObjectId, query: Queries): Pro
     throw new Error('Related document not found');
   }
 
-  return normalizeDocument(entityName, document, query);
+  return normalizeDocument(entityName, entity.attributes, document, query);
 }
 
-function normalizeDocument(entityName: string, doc: Document, query: Queries): Document {
-  if(doc['_id'] !== undefined) {
-    doc['id'] = doc['_id'] + '';
-    delete doc['_id'];
-  }
-
-  const resolver = getResolver(entityName);
-
-  return resolver && resolver.normalize ? resolver.normalize(doc, query) : doc;
-}
-
-export async function resolveDocument(entityName: string, attributes: EntityAttributeMap, doc: Document, query: Queries): Promise<Document> {
+export async function normalizeDocument(entityName: string, attributes: EntityAttributeMap, doc: Document, query: Queries): Promise<Document> {
   for(const [key, attribute] of Object.entries(attributes)) {
     switch(attribute.type) {
       case 'relationship:has-many':
@@ -43,11 +35,25 @@ export async function resolveDocument(entityName: string, attributes: EntityAttr
       case 'relationship:has-one':
         doc[key] = await loadHasOne(attribute.target ?? key, doc[key] as ObjectId, query);
         break;
+      case 'embed':
+        if(!Array.isArray(doc[key])) {
+          doc[key] = [];
+        }
         
+        doc[key] = (doc[key] as Document[]).map(doc => normalizeDocument(key, attribute.entity.attributes, doc, query));
+
+        break;
     }
   }
 
-  return normalizeDocument(entityName, doc, query);
+  if(doc['_id'] !== undefined) {
+    doc['id'] = doc['_id'] + '';
+    delete doc['_id'];
+  }
+
+  const resolver = getResolver(entityName);
+
+  return resolver && resolver.normalize ? resolver.normalize(doc, query) : doc;
 }
 
 export function denormalizeDocument(entityName: string, attributes: EntityAttributeMap, data: any, mutation: Mutations): Document {
@@ -88,7 +94,7 @@ export const documents = createRouter({
     const documents = await collection.find({}).toArray();
     const entity = getEntity(input);
 
-		return Promise.all(documents.map(doc => resolveDocument(input, entity.attributes, doc, 'loadAll')));
+		return Promise.all(documents.map(doc => normalizeDocument(input, entity.attributes, doc, 'loadAll')));
 	}),
 
   loadOne: publicProcedure.input((input: unknown) => {
@@ -106,7 +112,7 @@ export const documents = createRouter({
 
     const entity = getEntity(input.name);
   
-    return resolveDocument(input.name, entity.attributes, doc, 'loadOne');
+    return normalizeDocument(input.name, entity.attributes, doc, 'loadOne');
   }),
 
   deleteOne: publicProcedure.input((input: unknown) => {

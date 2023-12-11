@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { createRouter } from './rpc';
-import { documents } from './entity/documents';
+import { documents } from './server/document.router';
 
 export const router = createRouter({
 	documents
