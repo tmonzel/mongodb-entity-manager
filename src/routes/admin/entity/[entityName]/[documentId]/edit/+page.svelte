@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { actions } from '$admin/client';
+	import { EntityActions } from '$admin/client';
 	import EntityForm from '$admin/components/EntityForm.svelte';
 	import { createForm, getFormState, markAllAsTouched } from '$admin/form';
 	import { notify } from '$admin/notification';
@@ -17,7 +17,7 @@
       return;
     }
 
-    await actions.documents.updateOne.mutate({ 
+    await EntityActions.updateOne({ 
       entityName: $page.params.entityName, 
       id: data.document.id,
       changes: formState.value as Partial<Document> 

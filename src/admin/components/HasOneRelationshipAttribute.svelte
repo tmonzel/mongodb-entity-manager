@@ -2,7 +2,7 @@
 	import type { FormControl } from '$admin/form';
 	import type { RelationshipAttribute } from '../types';
 	import { FormSelect } from '$admin/form/components';
-	import { actions } from '$admin/client';
+	import { EntityActions } from '$admin/client';
 	import { humanize } from '../client/helpers';
 
   export let key: string;
@@ -11,7 +11,7 @@
 
   const relatedName = attribute.target ?? key;
   
-  const loadAll = actions.documents.loadAll.query(relatedName);
+  const loadAll = EntityActions.loadAll(relatedName);
 </script>
 
 {#await loadAll}

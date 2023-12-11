@@ -6,7 +6,7 @@
 	import { renderAttributeLabel, renderAttributeValue } from '$admin/client/helpers';
 	import { invalidateAll } from '$app/navigation';
 	import { notify } from '$admin/notification';
-	import { actions } from '$admin/client';
+	import { EntityActions } from '$admin/client';
 
   export let data: LayoutData;
 
@@ -19,7 +19,7 @@
   }
 
   async function deleteDocument(id: string): Promise<void> {
-    await actions.documents.deleteOne.mutate({ id, name: $page.params.entityName });
+    await EntityActions.deleteOne({ id, name: $page.params.entityName });
 
     notify({ 
       type: 'success', 

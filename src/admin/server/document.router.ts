@@ -1,89 +1,12 @@
 import { getCollection } from './data';
 import { createRouter, publicProcedure } from '$admin/rpc';
-import { getEntity, getResolver } from '$admin/server';
+import { getEntity } from '$admin/server';
 import type { CreateDocumentInput, UpdateDocumentInput } from './types';
-import { ObjectId, type Document } from 'mongodb';
-import type { Mutations, Queries } from './types';
-import type { EntityAttributeMap } from '../types';
+import { ObjectId } from 'mongodb';
+import { normalizeDocument } from './normalizer';
+import { denormalizeDocument } from './denormalizer';
 
-async function loadHasMany(entityName: string, ids: ObjectId[], query: Queries): Promise<Document[]> {
-  const entity = getEntity(entityName);
-  const collection = getCollection(entityName);
-  const documents = await collection.find({ _id: { $in: ids }}).toArray();
-
-  return documents.map(doc => normalizeDocument(entityName, entity.attributes, doc, query));
-}
-
-async function loadHasOne(entityName: string, id: ObjectId, query: Queries): Promise<Document> {
-  const entity = getEntity(entityName);
-  const collection = getCollection(entityName);
-  const document = await collection.findOne({ _id: id });
-
-  if(!document) {
-    throw new Error('Related document not found');
-  }
-
-  return normalizeDocument(entityName, entity.attributes, document, query);
-}
-
-export async function normalizeDocument(entityName: string, attributes: EntityAttributeMap, doc: Document, query: Queries): Promise<Document> {
-  for(const [key, attribute] of Object.entries(attributes)) {
-    switch(attribute.type) {
-      case 'relationship:has-many':
-        doc[key] = await loadHasMany(attribute.target ?? key, doc[key] as ObjectId[], query);
-        break;
-      case 'relationship:has-one':
-        doc[key] = await loadHasOne(attribute.target ?? key, doc[key] as ObjectId, query);
-        break;
-      case 'embed':
-        if(!Array.isArray(doc[key])) {
-          doc[key] = [];
-        }
-        
-        doc[key] = (doc[key] as Document[]).map(doc => normalizeDocument(key, attribute.entity.attributes, doc, query));
-
-        break;
-    }
-  }
-
-  if(doc['_id'] !== undefined) {
-    doc['id'] = doc['_id'] + '';
-    delete doc['_id'];
-  }
-
-  const resolver = getResolver(entityName);
-
-  return resolver && resolver.normalize ? resolver.normalize(doc, query) : doc;
-}
-
-export function denormalizeDocument(entityName: string, attributes: EntityAttributeMap, data: any, mutation: Mutations): Document {
-  const result: Document = {};
-
-  for(const [key, attr] of Object.entries(attributes)) {
-    switch(attr.type) {
-      case 'relationship:has-many':
-        result[key] = (data[key] as string[]).map(id => new ObjectId(id))
-        break;
-      case 'relationship:has-one':
-        result[key] = new ObjectId(data[key])
-        break;
-      case 'number':
-        result[key] = parseFloat(data[key]);
-        break;
-      case 'embed':
-        result[key] = (data[key] as Document[]).map(doc => denormalizeDocument(key, attr.entity.attributes, doc, mutation));
-        break;
-      default:
-        result[key] = data[key]
-    }
-  }
-
-  const resolver = getResolver(entityName);
-
-  return resolver && resolver.denormalize ? resolver.denormalize(result, mutation) : result;
-}
-
-export const documents = createRouter({
+export const documentRouter = createRouter({
 	loadAll: publicProcedure.input((name: unknown) => {
       if (typeof name === 'string') return name;
 

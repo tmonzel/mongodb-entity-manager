@@ -1,9 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { createRouter } from './rpc';
-import { documents } from './server/document.router';
+import { documentRouter } from './server/document.router';
 
 export const router = createRouter({
-	documents
+	documents: documentRouter
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
