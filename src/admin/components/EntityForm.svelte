@@ -21,7 +21,7 @@
       case 'relationship:has-many':
         return new FormControl<string[]>(value ? (value as { id: string }[]).map(obj => obj.id) : []);
       case 'relationship:has-one':
-        return new FormControl<string>(value ?? '');
+        return new FormControl<string | null>(value ? (value as { id: string }).id : null);
       case 'switch':
         return new FormControl<boolean>(value ?? (attr.default ?? false));
       case 'select':
