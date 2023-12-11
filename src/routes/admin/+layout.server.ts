@@ -10,6 +10,6 @@ export async function load() {
   }
 
 	return {
-		config
+		schema: config.schema
 	};
 }

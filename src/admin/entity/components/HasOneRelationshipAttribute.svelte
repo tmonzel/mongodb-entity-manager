@@ -6,10 +6,11 @@
 	import { humanize } from '../utils';
 
   export let key: string;
-  export let control: FormControl<string[]>;
+  export let control: FormControl<string>;
   export let attribute: RelationshipAttribute;
 
   const relatedName = attribute.target ?? key;
+  
   const loadAll = actions.documents.loadAll.query(relatedName);
 </script>
 
@@ -17,9 +18,8 @@
   Loading relation attribute...
 {:then documents} 
   <FormSelect 
-    options={documents.map(item => ({ name: item.name, value: item.id }))} 
+    options={documents.map(item => ({ name: item.name ?? item.id, value: item.id }))} 
     label={attribute.label ?? humanize(key)} 
-    multiple
     bind:control={control} 
   />
 {/await}

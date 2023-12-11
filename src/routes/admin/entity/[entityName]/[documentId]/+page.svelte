@@ -16,7 +16,7 @@
 
     {#if data.entity.nestedSchemata}
       {#each data.entity.nestedSchemata as s}
-      <a class="btn btn-success d-flex me-2" href="{$page.url}/{s.name}">
+      <a class="btn btn-success d-flex me-2" href="{$page.url}/">
         {s.collection.title}
       </a>
       {/each}

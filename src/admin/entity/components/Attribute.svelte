@@ -6,6 +6,7 @@
 	import { FormGroup } from '$admin/form/types';
 	import RelationshipAttribute from './RelationshipAttribute.svelte';
 	import EmbedAttributeForm from './EmbedAttributeForm.svelte';
+	import HasOneRelationshipAttribute from './HasOneRelationshipAttribute.svelte';
 
   export let key: string;
   export let control: FormControl | FormControl[] | FormGroup;
@@ -48,10 +49,7 @@
 
     {:else if attribute.type === 'relationship:has-one'}
 
-      <!--<FormSelect 
-        bind:control 
-        label={attribute.label} 
-      />-->
+      <HasOneRelationshipAttribute bind:control {key} {attribute} />
        
     {/if}
   

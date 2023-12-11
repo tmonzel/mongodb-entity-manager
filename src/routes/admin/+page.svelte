@@ -6,10 +6,9 @@
 </script>
 
 <div class="row">
-	{#each data.config.dashboard as entityName}
-		{@const entity = data.config.schema[entityName]}
+	{#each Object.entries(data.schema) as [name, entity]}
 		<div class="col-md-3 mb-4">
-			<a class="card" href="{$page.url}/entity/{entityName}" style="min-height: 150px;">
+			<a class="card" href="{$page.url}/entity/{name}" style="min-height: 150px;">
 				<div class="card-body">
 					<h5 class="card-title">{entity.type}</h5>
 					<!--<h6 class="card-subtitle mb-2 text-body-secondary">{name}</h6>-->

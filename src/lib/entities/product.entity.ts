@@ -22,10 +22,33 @@ export const ProductEntity: Entity = {
       validations: {
         required: true
       }
+    },
+
+    variants: {
+      type: 'embed',
+      entity: {
+        type: 'ProductVariant',
+        attributes: {
+          name: {
+            type: 'text',
+            label: 'Name'
+          },
+
+          price: {
+            type: 'number',
+            label: 'Price'
+          }
+        },
+
+        collection: {
+          title: 'Variants'
+        }
+      }
     }
   },
 
   collection: {
-    title: 'Products'
+    title: 'Products',
+    columns: ['name']
   }
 }

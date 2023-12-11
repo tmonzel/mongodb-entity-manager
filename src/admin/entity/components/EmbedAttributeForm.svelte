@@ -6,6 +6,7 @@
 	import { onDestroy } from 'svelte';
 	import Dialog from '$admin/components/Dialog.svelte';
 	import EntityForm from './EntityForm.svelte';
+	import { renderAttributeLabel, renderAttributeValue } from '$admin/client';
 
   export let entity: AbstractEntity;
   export let control: FormControl<Document[]>;
@@ -68,8 +69,8 @@
   <table class="table">
     <thead>
       <tr>
-        {#each Object.entries(entity.attributes) as [name, attr]}
-        <th>{attr.label ?? name}</th>
+        {#each Object.keys(entity.attributes) as key}
+        <th>{renderAttributeLabel(entity, key)}</th>
         {/each}
         <th></th>
       </tr>
@@ -78,8 +79,8 @@
     <tbody>
       {#each $values as value, index}
       <tr>
-        {#each Object.keys(entity.attributes) as name}
-        <td>{value[name]}</td>
+        {#each Object.keys(entity.attributes) as key}
+        <td>{renderAttributeValue(entity, key, value)}</td>
         {/each}
         <td style="width: 1%">
           <div class="d-flex">
@@ -108,7 +109,7 @@
   <!-- Update Dialog -->
   <Dialog opened={!!editableDocument} on:close={() => $selectedIndex = null}>
     <svelte:fragment slot="title">
-      Update Prop
+      Update {entity.type}
     </svelte:fragment>
 
     <EntityForm bind:form={$form} {entity} value={editableDocument} />
@@ -123,7 +124,7 @@
   <!-- Create Dialog -->
   <Dialog bind:this={formDialog}>
     <svelte:fragment slot="title">
-      Create Prop
+      Create {entity.type}
     </svelte:fragment>
 
     <EntityForm bind:form={$form} {entity} />

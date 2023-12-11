@@ -4,6 +4,7 @@ import { RPC_URL } from './constants';
 import type { Document } from 'mongodb';
 import type { Entity, EntitySchema } from './types';
 import { getContext } from 'svelte';
+import { humanize } from './entity/utils';
 
 export const actions = createTRPCProxyClient<Router>({
 	links: [
@@ -28,6 +29,13 @@ export function renderAttributeValue(entity: Entity, name: string, doc: Document
     return renderDocument(attr.renderAs, doc[name]);
   }
 
+  if(attr.type === 'relationship:has-one') {
+    const schema = getEntitySchema();
+    const relatedSchema = schema[attr.target ?? name];
+
+    return relatedSchema.renderAs ? renderDocument(relatedSchema.renderAs, doc[name]) : doc.name;
+  }
+
   if(attr.type === 'relationship:has-many') {
     const schema = getEntitySchema();
     const relatedSchema = schema[attr.target ?? name];
@@ -50,8 +58,8 @@ export function renderAttributeValue(entity: Entity, name: string, doc: Document
 
 export function renderAttributeLabel(entity: Entity, key: string): string {
   const attr = entity.attributes[key];
-
-  return attr.label ?? '-'; 
+  
+  return attr.label ?? humanize(key); 
 }
 
 export function getEntitySchema(): EntitySchema {

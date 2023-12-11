@@ -5,7 +5,7 @@ import { RPC_URL } from '$admin/constants';
 import { initializeAdmin } from '$admin/server';
 import { CustomerEntity } from '$lib/entities/customer.entity';
 import { ProductEntity } from '$lib/entities/product.entity';
-import { OrderEntity } from '$lib/entities/order.entity';
+import { OrderEntity, OrderResolver } from '$lib/entities/order.entity';
 
 // Setup all admin data
 initializeAdmin({
@@ -15,7 +15,9 @@ initializeAdmin({
 		orders: OrderEntity,
 	},
 
-	dashboard: ['customers', 'products', 'orders']
+	resolvers: {
+		orders: OrderResolver
+	},
 });
 
 /** @type {import('@sveltejs/kit').Handle} */

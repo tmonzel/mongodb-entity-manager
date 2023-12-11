@@ -1,11 +1,11 @@
 import type { Document } from 'mongodb';
+import type { DocumentResolver } from './entity/types';
 
 export type AdminConfig = {
   // All defined entities
   schema: EntitySchema;
 
-  // All navigatable entities showing on the dashboard by name 
-  dashboard: string[]
+  resolvers?: { [entityName: string]: DocumentResolver };
 }
 
 export type EntitySchema = {
@@ -69,9 +69,11 @@ export type EntityDetail = {
   attributes?: string[];
 }
 
+export type EntityAttributeMap = { [name: string]: EntityAttribute };
+
 export interface AbstractEntity {
   type: string;
-  attributes: { [name: string]: EntityAttribute };
+  attributes: EntityAttributeMap;
   collection: EntityCollection;
   form?: string[];
 }

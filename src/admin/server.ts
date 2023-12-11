@@ -1,4 +1,5 @@
 import { establishConnection } from './data';
+import type { DocumentResolver } from './entity/types';
 import type { AdminConfig, Entity } from './types';
 
 let configuration: AdminConfig;
@@ -9,6 +10,10 @@ export function getConfig(): AdminConfig {
 
 export function getEntity(name: string): Entity {
   return configuration.schema[name];
+}
+
+export function getResolver(name: string): DocumentResolver | undefined {
+  return configuration.resolvers ? configuration.resolvers[name] : undefined;
 }
 
 export function initializeAdmin(config: AdminConfig) {

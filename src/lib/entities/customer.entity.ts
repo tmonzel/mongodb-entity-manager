@@ -12,6 +12,7 @@ export type Customer = {
 export const CustomerEntity: Entity = {
   type: 'Customer',
   description: 'Can purchase products',
+  renderAs: '{lastName}, {firstName}',
   
   attributes: {
     firstName: {
@@ -33,7 +34,7 @@ export const CustomerEntity: Entity = {
     address: {
       label: 'Address',
       type: 'object',
-      renderAs: '{street} {postalCode}',
+      renderAs: '{street}, {postalCode} {city} ',
       attributes: {
         street: {
           label: 'Street',
@@ -43,6 +44,11 @@ export const CustomerEntity: Entity = {
         postalCode: {
           label: 'Postal code',
           type: 'text',
+        },
+
+        city: {
+          label: 'City',
+          type: 'text'
         }
       }
     },
