@@ -58,7 +58,7 @@
     <tr>
       <td style="width: 20%;">{doc.id}</td>
       {#each columns as col}
-      <td>{renderAttributeValue(data.entity, col, doc)}</td>
+      <td>{renderAttributeValue(data.entity.attributes[col], col, doc)}</td>
       {/each}
       <td style="width: 1%">
         <div class="d-flex">

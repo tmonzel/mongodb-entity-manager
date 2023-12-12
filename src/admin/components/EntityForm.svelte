@@ -18,10 +18,13 @@
 		switch(attr.type) {
       case 'object':
 				return new FormGroup(createControlsFromAttributes(attr.attributes, value ?? {}));
-      case 'relationship:has-many':
-        return new FormControl<string[]>(value ? (value as { id: string }[]).map(obj => obj.id) : []);
-      case 'relationship:has-one':
-        return new FormControl<string | null>(value ? (value as { id: string }).id : null);
+      
+      case 'relationship:has_many':
+      case 'relationship:belongs_to_many':
+        return new FormControl<string[]>(value ? (value as Document[]).map(obj => obj.id) : []);
+      
+      case 'relationship:belongs_to':
+        return new FormControl<string | null>(value ? value.id : null);
       case 'switch':
         return new FormControl<boolean>(value ?? (attr.default ?? false));
       case 'select':
@@ -41,7 +44,9 @@
           }) as Validator[]
         }
 
-        return new FormControl(value ?? '', validators);
+        return new FormControl(value ?? attr.default, validators);
+      default:
+        return new FormControl(value);
 		}
 	}
 

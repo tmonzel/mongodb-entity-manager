@@ -12,6 +12,7 @@ const Actions = createTRPCProxyClient<Router>({
 
 export const EntityActions = {
 	loadAll: Actions.documents.loadAll.query,
+	loadEmbed: Actions.documents.loadEmbed.query,
   create: Actions.documents.create.mutate,
   updateOne: Actions.documents.updateOne.mutate,
   deleteOne: Actions.documents.deleteOne.mutate

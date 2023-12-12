@@ -1,17 +1,23 @@
 import type { EntityAttributeMap } from '$admin/types';
 import { ObjectId, type Document } from 'mongodb';
-import type { Mutations } from './types';
 import { getResolver } from '.';
+import type { Mutation } from './types';
 
-export function denormalizeDocument(entityName: string, attributes: EntityAttributeMap, data: any, mutation: Mutations): Document {
+export function denormalizeDocument(entityName: string, attributes: EntityAttributeMap, data: any, mutation: Mutation): Document {
   const result: Document = {};
 
   for(const [key, attr] of Object.entries(attributes)) {
+    
+    // Skip all virtual fields
+    if(attr.virtual) {
+      continue;
+    }
+
     switch(attr.type) {
-      case 'relationship:has-many':
+      case 'relationship:belongs_to_many':
         result[key] = (data[key] as string[]).map(id => new ObjectId(id))
         break;
-      case 'relationship:has-one':
+      case 'relationship:belongs_to':
         result[key] = new ObjectId(data[key])
         break;
       case 'number':

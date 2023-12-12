@@ -3,21 +3,20 @@
 	import type { RelationshipAttribute } from '../types';
 	import { FormSelect } from '$admin/form/components';
 	import { EntityActions } from '$admin/client';
-	import { humanize } from '../client/helpers';
+	import { humanize, renderEntityDocument } from '../client/helpers';
 
   export let key: string;
   export let control: FormControl<string[]>;
   export let attribute: RelationshipAttribute;
 
-  const relatedName = attribute.target ?? key;
-  const loadAll = EntityActions.loadAll(relatedName);
+  const ref = attribute.ref ?? key;
 </script>
 
-{#await loadAll}
+{#await EntityActions.loadAll(ref)}
   Loading relation attribute...
 {:then documents} 
   <FormSelect 
-    options={documents.map(item => ({ name: item.name, value: item.id }))} 
+    options={documents.map(doc => ({ name: renderEntityDocument(ref, doc), value: doc.id }))} 
     label={attribute.label ?? humanize(key)} 
     multiple
     bind:control={control} 

@@ -12,8 +12,9 @@ export type ProductVariant = {
 
 export const ProductEntity: Entity = {
   type: 'Product',
+  key: 'product',
   description: 'Goods which can be purchased by customers',
-  renderAs: '{title}',
+  renderAs: '{name}',
   
   attributes: {
     name: {
@@ -21,13 +22,32 @@ export const ProductEntity: Entity = {
       type: 'text',
       validations: {
         required: true
-      }
+      },
+      core: true
+    },
+
+    categories: {
+      type: 'select',
+      label: 'Categories',
+      multiple: true,
+      options: [
+        {
+          name: 'Clothes',
+          value: 'clothes'
+        },
+        {
+          name: 'Tools',
+          value: 'tools'
+        }
+      ]
     },
 
     variants: {
       type: 'embed',
       entity: {
         type: 'ProductVariant',
+        key: 'productVariant',
+
         attributes: {
           name: {
             type: 'text',

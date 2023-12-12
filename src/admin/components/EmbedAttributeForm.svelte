@@ -7,7 +7,10 @@
 	import Dialog from '$admin/components/Dialog.svelte';
 	import EntityForm from './EntityForm.svelte';
 	import { renderAttributeLabel, renderAttributeValue } from '$admin/client/helpers';
+	import { EntityActions } from '$admin/client';
+	import { page } from '$app/stores';
 
+  export let key: string;
   export let entity: AbstractEntity;
   export let control: FormControl<Document[]>;
   
@@ -19,16 +22,22 @@
 
   $: editableDocument = $selectedIndex != null ? $values[$selectedIndex] : undefined;
 
-  function save() {
+  async function save() {
     if(!formState.valid) {
       markAllAsTouched(form);
       return;
     }
+
+    const doc = await EntityActions.loadEmbed({ 
+      entityName: $page.params.entityName, 
+      embedName: key,
+      data: formState.value
+    });
     
     if(editableDocument) {
       values.update(v => v.map((value, index) => {
         if(index === $selectedIndex) {
-          return formState.value;
+          return doc;
         }
 
         return value;
@@ -37,7 +46,7 @@
       $selectedIndex = null;
 
     } else {
-      values.update(v => ([...v, formState.value]));
+      values.update(v => ([...v, doc]));
     
       formDialog.close();
     }
@@ -79,8 +88,8 @@
     <tbody>
       {#each $values as value, index}
       <tr>
-        {#each Object.keys(entity.attributes) as key}
-        <td>{renderAttributeValue(entity, key, value)}</td>
+        {#each Object.entries(entity.attributes) as [key, attr]}
+        <td>{renderAttributeValue(attr, key, value)}</td>
         {/each}
         <td style="width: 1%">
           <div class="d-flex">
@@ -111,7 +120,7 @@
     <svelte:fragment slot="title">
       Update {entity.type}
     </svelte:fragment>
-
+    
     <EntityForm bind:form={$form} {entity} value={editableDocument} />
 
     <svelte:fragment slot="footer">

@@ -6,7 +6,7 @@
 	import { FormGroup } from '$admin/form/types';
 	import RelationshipAttribute from './RelationshipAttribute.svelte';
 	import EmbedAttributeForm from './EmbedAttributeForm.svelte';
-	import HasOneRelationshipAttribute from './HasOneRelationshipAttribute.svelte';
+	import BelongsToRelationshipAttribute from './BelongsToRelationshipAttribute.svelte';
 
   export let key: string;
   export let control: FormControl | FormControl[] | FormGroup;
@@ -20,7 +20,7 @@
       <FormInput 
         bind:control
         type={attribute.type} 
-        label={attribute.label}
+        label={attribute.label ?? key}
       />
       
     {:else if attribute.type === 'select'}
@@ -29,27 +29,27 @@
         bind:control 
         multiple={attribute.multiple}
         options={attribute.options} 
-        label={attribute.label} 
+        label={attribute.label ?? key} 
       />
 
     {:else if attribute.type === 'switch'}
 
       <FormCheckbox 
         bind:control 
-        label={attribute.label}
+        label={attribute.label ?? key}
       />
 
     {:else if attribute.type === 'embed'}
 
-      <EmbedAttributeForm bind:control entity={attribute.entity} />
+      <EmbedAttributeForm bind:control {key} entity={attribute.entity} />
 
-    {:else if attribute.type === 'relationship:has-many'}
+    {:else if attribute.type === 'relationship:belongs_to_many'}
 
       <RelationshipAttribute bind:control {key} {attribute} />
 
-    {:else if attribute.type === 'relationship:has-one'}
+    {:else if attribute.type === 'relationship:belongs_to'}
 
-      <HasOneRelationshipAttribute bind:control {key} {attribute} />
+      <BelongsToRelationshipAttribute bind:control {key} {attribute} />
        
     {/if}
   

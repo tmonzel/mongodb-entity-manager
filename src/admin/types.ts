@@ -11,27 +11,31 @@ export type EntitySchema = {
   [entityName: string]: Entity;
 }
 
-export interface RelationshipAttribute {
-  type: 'relationship:has-many' | 'relationship:has-one';
+export interface AbstractAttribute {
+  type: string;
   label?: string;
-  target?: string;
+  core?: boolean;
+  virtual?: boolean;
 }
 
-export interface ObjectAttribute {
+export interface RelationshipAttribute extends AbstractAttribute {
+  type: 'relationship:belongs_to_many' | 'relationship:belongs_to' | 'relationship:has_many';
+  ref?: string;
+}
+
+export interface ObjectAttribute extends AbstractAttribute {
   type: 'object' | 'array';
-  label?: string;
   renderAs?: string;
   attributes: { [name: string]: EntityAttribute };
   form?: string[];
 }
 
-export interface EmbedAttribute {
+export interface EmbedAttribute extends AbstractAttribute {
   type: 'embed',
-  label?: string;
   entity: AbstractEntity;
 }
 
-export interface SwitchAttribute {
+export interface SwitchAttribute extends AbstractAttribute {
   type: 'switch';
   label: string;
   value?: boolean;
@@ -39,18 +43,16 @@ export interface SwitchAttribute {
   default?: boolean;
 }
 
-export interface SelectAttribute {
+export interface SelectAttribute extends AbstractAttribute {
   type: 'select';
-  label?: string;
   multiple?: boolean;
   options: { name: string; value: any; }[];
   validations?: { [name: string]: string | boolean };
   default?: boolean;
 }
 
-export interface InputAttribute {
+export interface InputAttribute extends AbstractAttribute {
   type: 'text' | 'number';
-  label?: string;
   validations?: { [name: string]: string | boolean };
   default?: string | number;
 }
@@ -72,6 +74,7 @@ export type EntityAttributeMap = { [name: string]: EntityAttribute };
 
 export interface AbstractEntity {
   type: string;
+  key: string;
   attributes: EntityAttributeMap;
   collection: EntityCollection;
   form?: string[];

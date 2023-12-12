@@ -1,14 +1,21 @@
 import type { Document } from 'mongodb';
 
-export type Queries = 'loadAll' | 'loadOne';
-export type Mutations = 'create' | 'updateOne';
-
-export type DocumentNormalizer = (doc: Document, query: Queries) => Document;
-export type DocumentDenormalizer = (doc: Document, mutation: Mutations) => Document;
+export type DocumentNormalizer = (doc: Document, query: Query) => Document;
+export type DocumentDenormalizer = (doc: Document, mutation: Mutation) => Document;
 
 export type DocumentResolver = {
   normalize?: DocumentNormalizer;
   denormalize?: DocumentDenormalizer
+}
+
+export type Query = {
+  type: 'loadAll' | 'loadOne' | 'loadEmbed';
+  data?: any;
+}
+
+export type Mutation = {
+  type: 'create' | 'updateOne' | 'embed';
+  data?: any;
 }
 
 export type CreateDocumentInput = {

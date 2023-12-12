@@ -11,6 +11,8 @@ export type Customer = {
 
 export const CustomerEntity: Entity = {
   type: 'Customer',
+  key: 'customer',
+
   description: 'Can purchase products',
   renderAs: '{lastName}, {firstName}',
   
@@ -18,17 +20,24 @@ export const CustomerEntity: Entity = {
     firstName: {
       label: 'First Name',
       type: 'text',
+      core: true,
       validations: {
         required: true
-      }
+      },
     },
 
     lastName: {
       label: 'Last Name',
       type: 'text',
+      core: true,
       validations: {
         required: true
       }
+    },
+
+    orders: {
+      type: 'relationship:has_many',
+      ref: 'orders'
     },
 
     address: {
@@ -60,6 +69,6 @@ export const CustomerEntity: Entity = {
   // Configurate Collection View
   collection: {
     title: 'Customers',
-    columns: ['firstName', 'lastName', 'address']
+    columns: ['firstName', 'lastName', 'address', 'orders']
   }
 }

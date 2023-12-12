@@ -3,10 +3,12 @@ import { createRouter, publicProcedure } from '$admin/rpc';
 import { getEntity } from '$admin/server';
 import type { CreateDocumentInput, UpdateDocumentInput } from './types';
 import { ObjectId } from 'mongodb';
-import { normalizeDocument } from './normalizer';
+import { normalizeEntity } from './normalizer';
 import { denormalizeDocument } from './denormalizer';
 
 export const documentRouter = createRouter({
+
+  // Load collection view
 	loadAll: publicProcedure.input((name: unknown) => {
       if (typeof name === 'string') return name;
 
@@ -17,7 +19,14 @@ export const documentRouter = createRouter({
     const documents = await collection.find({}).toArray();
     const entity = getEntity(input);
 
-		return Promise.all(documents.map(doc => normalizeDocument(input, entity.attributes, doc, 'loadAll')));
+    if(!entity) {
+      throw new Error(`Entity ${input} does not exist`);
+    }
+
+    // Include all toplevel fields for now
+    const fields = Object.keys(entity.attributes);
+
+		return Promise.all(documents.map(doc => normalizeEntity(entity, doc, { type: 'loadAll' }, fields)));
 	}),
 
   loadOne: publicProcedure.input((input: unknown) => {
@@ -34,8 +43,15 @@ export const documentRouter = createRouter({
     }
 
     const entity = getEntity(input.name);
+
+    if(!entity) {
+      throw new Error(`Entity ${input} does not exist`);
+    }
+
+    // Include all toplevel fields for now
+    const fields = Object.keys(entity.attributes);
   
-    return normalizeDocument(input.name, entity.attributes, doc, 'loadOne');
+    return normalizeEntity(entity, doc, { type: 'loadOne' }, fields);
   }),
 
   deleteOne: publicProcedure.input((input: unknown) => {
@@ -58,10 +74,14 @@ export const documentRouter = createRouter({
 		.mutation(async ({ input }) => {
       const entity = getEntity(input.entityName);
       const collection = getCollection(input.entityName);
+
+      if(!entity) {
+        throw new Error(`Entity ${input} does not exist`);
+      }
       
       await collection.updateOne(
         { _id: new ObjectId(input.id) }, 
-        { $set: denormalizeDocument(input.entityName, entity.attributes, input.changes, 'updateOne') }
+        { $set: denormalizeDocument(input.entityName, entity.attributes, input.changes, { type: 'updateOne' }) }
       );
 		}),
 
@@ -74,7 +94,46 @@ export const documentRouter = createRouter({
 		.mutation(async ({ input }) => {
       const entity = getEntity(input.entityName);
       const collection = getCollection(input.entityName);
+
+      if(!entity) {
+        throw new Error(`Entity ${input} does not exist`);
+      }
       
-      await collection.insertOne(denormalizeDocument(input.entityName, entity.attributes, input.data, 'create'));
+      await collection.insertOne(denormalizeDocument(input.entityName, entity.attributes, input.data, { type: 'create' }));
+		}),
+
+  loadEmbed: publicProcedure
+		.input((data: unknown) => {
+			if (typeof data === 'object') return data as any;
+
+			throw new Error(`Invalid input: ${typeof data}`);
+		})
+		.query(async ({ input }) => {
+      const entity = getEntity(input.entityName);
+
+      if(!entity) {
+        throw new Error(`Entity ${input} does not exist`);
+      }
+
+      const embedAttribute = entity.attributes[input.embedName];
+
+      if(embedAttribute.type !== 'embed') {
+        throw new Error(`This attribute is not of type 'embed'`);
+      }
+
+      // Include all toplevel fields for now
+      const fields = Object.keys(embedAttribute.entity.attributes);
+
+      // Need to find a better solution
+      const denormalizedDocument = denormalizeDocument(input.embedName, embedAttribute.entity.attributes, input.data, { type: 'embed' });
+
+      return normalizeEntity(
+        embedAttribute.entity, 
+        denormalizedDocument, 
+        {
+          type: 'loadEmbed'
+        },
+        fields
+      );
 		})
 });
