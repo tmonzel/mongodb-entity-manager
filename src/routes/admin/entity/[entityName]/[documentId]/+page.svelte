@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { isActionAllowed } from '$admin/client/helpers';
+import { page } from '$app/stores';
 	import type { LayoutData } from './$types';
 
   export let data: LayoutData;
@@ -23,12 +24,14 @@
     {/if}
   </div>
 
+  {#if isActionAllowed(data.entity, 'update')}
   <a 
     class="btn btn-primary" 
     href="{$page.url}/edit"
   >
     Edit {data.entity.type}
-</a>
+  </a> 
+  {/if}
 </div>
 
 <h1 class="mb-4">{data.entity.type}#{id}</h1>
