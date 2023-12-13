@@ -26,7 +26,7 @@
   
   let selectionMode = false;
   let inputElement: HTMLInputElement;
-
+  
   function handleChange(value: any) {
     control = control.handleChange(value);
   }
@@ -129,6 +129,7 @@
       {/each}
     </div>
     <input 
+      type="text"
       bind:this={inputElement}
       class="border-0 flex-grow-1"
       style="outline: none;"
@@ -144,7 +145,7 @@
     {#if selectionMode}
       {#if $filteredItems.length > 0}
         <ul class="list-group w-100 position-absolute shadow-sm">
-          {#each $filteredItems as item}
+          {#each $filteredItems as item, i}
           {@const selected = isItemSelected(item)}
           <li class="list-group-item d-flex p-0" class:active={selected}>
             <button 
@@ -153,6 +154,7 @@
             >
               {#if multiple}
               <input 
+                id={id + i}
                 class="form-check-input" 
                 type="checkbox" checked={selected}
                 style="pointer-events: none;"
