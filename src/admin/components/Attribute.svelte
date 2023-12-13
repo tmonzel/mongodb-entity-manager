@@ -8,6 +8,7 @@
 	import EmbedAttributeForm from './EmbedAttributeForm.svelte';
 	import BelongsToRelationshipAttribute from './BelongsToRelationshipAttribute.svelte';
 	import { renderAttributeLabel } from '$admin/client/helpers';
+	import FileAttribute from './FileAttribute.svelte';
 
   export let key: string;
   export let control: FormControl | FormControl[] | FormGroup;
@@ -39,6 +40,10 @@
         bind:control 
         label={renderAttributeLabel(attribute, key)}
       />
+
+    {:else if attribute.type === 'file'}
+
+      <FileAttribute bind:control {key} label={renderAttributeLabel(attribute, key)} />
 
     {:else if attribute.type === 'embed'}
 

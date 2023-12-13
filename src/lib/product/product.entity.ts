@@ -40,7 +40,8 @@ export const ProductEntity = createEntity({
 
     variants: {
       type: 'embed',
-      entity: ProductVariantEntity
+      entity: ProductVariantEntity,
+      core: true
     }
   },
 
@@ -48,7 +49,7 @@ export const ProductEntity = createEntity({
 
   collection: {
     title: 'Products',
-    columns: ['name'],
+    columns: ['name', 'categories'],
     search: 'name'
   }
 });

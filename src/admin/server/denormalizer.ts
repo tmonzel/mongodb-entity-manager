@@ -7,12 +7,6 @@ export function denormalizeDocument(entityName: string, attributes: EntityAttrib
   const result: Document = {};
 
   for(const [key, attr] of Object.entries(attributes)) {
-    
-    // Skip all virtual fields
-    if(attr.virtual) {
-      continue;
-    }
-
     switch(attr.type) {
       case 'relationship:belongs_to_many':
         result[key] = (data[key] as string[]).map(id => new ObjectId(id))

@@ -2,6 +2,7 @@
 	import { renderAttributeColumn, renderAttributeValue } from '$admin/client/helpers';
 	import type { Entity } from '$admin/types';
 	import type { Document } from 'mongodb';
+	import AttributeValue from './AttributeValue.svelte';
 
   export let entity: Entity;
   export let data: Document[];
@@ -27,7 +28,7 @@
       
       {#each columns as col}
         {#if entity.attributes[col] !== undefined}
-          <td>{renderAttributeValue(entity.attributes[col], col, doc)}</td>
+          <td><AttributeValue {entity} key={col} value={doc[col]} /></td>
         {:else}
           <td>{doc[col]}</td>
         {/if}

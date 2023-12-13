@@ -17,7 +17,6 @@ export interface AbstractAttribute {
   type: string;
   label?: string;
   core?: boolean;
-  virtual?: boolean;
 }
 
 export interface RelationshipAttribute extends AbstractAttribute {
@@ -30,6 +29,10 @@ export interface ObjectAttribute extends AbstractAttribute {
   renderAs?: string;
   attributes: { [name: string]: EntityAttribute };
   form?: string[];
+}
+
+export interface FileAttribute extends AbstractAttribute {
+  type: 'file';
 }
 
 export interface EmbedAttribute extends AbstractAttribute {
@@ -59,7 +62,7 @@ export interface InputAttribute extends AbstractAttribute {
   default?: string | number;
 }
 
-export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute | SwitchAttribute | SelectAttribute | EmbedAttribute;
+export type EntityAttribute = InputAttribute | ObjectAttribute | RelationshipAttribute | SwitchAttribute | SelectAttribute | EmbedAttribute | FileAttribute;
 
 export type EntityCollection = {
   title: string;
@@ -107,7 +110,7 @@ export interface EntityContext {
 
 export type FindActionInput = {
   entityName: string;
-  page: number;
+  page?: number;
   filter?: Filter<Document>;
   pageSize?: number;
 }

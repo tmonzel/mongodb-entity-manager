@@ -22,13 +22,17 @@ export const documentRouter = createRouter({
     if(!entity) {
       throw new Error(`Entity ${input} does not exist`);
     }
-
+    
+    const page = input.page ?? 1;
     const filter = input.filter ?? {};
-    const pageSize = input.pageSize ?? 25;
-    const pageIndex = input.page - 1;
+    const pageSize = input.pageSize ?? 0;
+    const pageIndex = page - 1;
     
     const totalItems = await collection.countDocuments(filter);
-    const documents = await collection.find(filter, { skip: pageIndex * pageSize, limit: pageSize }).toArray();
+    const documents = await collection.find(filter, { 
+      skip: pageIndex * pageSize, 
+      limit: pageSize === 0 ? undefined : pageSize 
+    }).toArray();
 
     // Include all toplevel fields for now
     const fields = Object.keys(entity.attributes);

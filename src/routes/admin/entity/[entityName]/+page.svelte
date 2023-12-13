@@ -2,11 +2,10 @@
 	import { page } from '$app/stores';
 	import Dialog from '$admin/components/Dialog.svelte';
 	import { isActionAllowed } from '$admin/client/helpers';
-	import { invalidateAll } from '$app/navigation';
 	import { notify } from '$admin/notification';
 	import { EntityActions } from '$admin/client';
 	import EntityDataTable from '$admin/components/EntityDataTable.svelte';
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import type { EntityContext } from '$admin/types';
 
   const { entity, searchTerm, result, find } = getContext<EntityContext>('entity');
@@ -22,8 +21,14 @@
     });
 
     deleteDialog.close();
-    invalidateAll();
+
+    // Reload data
+    find({});
   }
+
+  onMount(() => {
+    find({});
+  });
   
 </script>
 

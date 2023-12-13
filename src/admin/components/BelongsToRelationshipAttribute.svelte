@@ -14,9 +14,9 @@
 
 {#await EntityActions.find({ entityName: ref })}
   Loading relation attribute...
-{:then documents} 
+{:then result} 
   <FormSelect 
-    options={documents.map(doc => ({ name: renderEntityDocument(ref, doc), value: doc.id }))} 
+    options={result.data.map(doc => ({ name: renderEntityDocument(ref, doc), value: doc.id }))} 
     label={attribute.label ?? humanize(key)} 
     bind:control={control} 
   />

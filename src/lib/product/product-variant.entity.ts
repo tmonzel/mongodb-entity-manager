@@ -12,12 +12,14 @@ export const ProductVariantEntity = createEntity({
   attributes: {
     name: {
       type: 'text',
-      label: 'Name'
+      label: 'Name',
+      core: true
     },
 
     price: {
       type: 'number',
-      label: 'Price'
+      label: 'Price',
+      core: true
     }
   },
 

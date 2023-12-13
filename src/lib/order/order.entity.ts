@@ -16,6 +16,7 @@ const attributes: EntityAttributeMap = {
   customer: {
     type: 'relationship:belongs_to',
     ref: 'customers',
+    core: true
   },
 
   items: {
@@ -36,7 +37,7 @@ export const OrderEntity = createEntity({
 
   attributes,
 
-  actions: [],
+  actions: ['update'],
 
   form: ['customer', 'items'],
 

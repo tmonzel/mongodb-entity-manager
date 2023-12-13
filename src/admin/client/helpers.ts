@@ -10,6 +10,10 @@ export function humanize(str: string) {
       .replace(/^[a-z]/, (m) => m.toUpperCase());
 }
 
+export function extractMimeFromBase64(str: string) {
+  return str.match(/^data:([\w/]+);/)?.[1];
+}
+
 export function renderDocument(str: string, doc: Document): string {
   return str.replace(/(\{([a-zA-Z]+)\})+/g, (match, ...groups) => {
     const attrName = groups[1];
@@ -33,6 +37,17 @@ export function renderAttributeValue(attr: EntityAttribute, name: string, doc: D
 
   if(attr.type === 'object' && attr.renderAs) {
     return renderDocument(attr.renderAs, doc[name]);
+  }
+
+  if(attr.type === 'select') {
+    if(!Array.isArray(doc[name]) || doc[name].length === 0) {
+      return '-';
+    }
+
+    return (doc[name] as string[])
+      .map(v => attr.options.find(opt => opt.value === v))
+      .map(p => p?.name)
+      .join(', ');
   }
 
   if(attr.type === 'relationship:belongs_to') {
