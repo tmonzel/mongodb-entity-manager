@@ -1,11 +1,11 @@
 import type { Document } from 'mongodb';
 
-export type DocumentNormalizer = (doc: Document, query: Query) => Document;
-export type DocumentDenormalizer = (doc: Document, mutation: Mutation) => Document;
+export type DocumentNormalizer<T> = (doc: T, query: Query) => Document;
+export type DocumentDenormalizer<T> = (doc: T, mutation: Mutation) => Document;
 
-export type DocumentResolver = {
-  normalize?: DocumentNormalizer;
-  denormalize?: DocumentDenormalizer
+export type DocumentResolver<T extends Document> = {
+  normalize?: DocumentNormalizer<T>;
+  denormalize?: DocumentDenormalizer<T>
 }
 
 export type Query = {

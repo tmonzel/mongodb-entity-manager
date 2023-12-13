@@ -4,7 +4,7 @@ export type AdminConfig = {
   // All defined entities
   schema: EntitySchema;
 
-  resolvers?: { [entityName: string]: DocumentResolver };
+  resolvers?: { [entityName: string]: DocumentResolver<any> };
 }
 
 export type EntitySchema = {
@@ -77,6 +77,7 @@ export interface AbstractEntity {
   key: string;
   attributes: EntityAttributeMap;
   collection: EntityCollection;
+  labels?: { [key: string]: string };
   form?: string[];
 }
 
@@ -86,4 +87,5 @@ export interface Entity extends AbstractEntity {
   identifiedBy?: string;
   nestedSchemata?: Entity[];
   detail?: EntityDetail;
+  actions?: string[];
 }
