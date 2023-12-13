@@ -1,4 +1,6 @@
+import type { Readable, Writable } from 'svelte/store';
 import type { DocumentResolver } from './server/types';
+import type { Document, Filter } from 'mongodb';
 
 export type AdminConfig = {
   // All defined entities
@@ -88,4 +90,24 @@ export interface Entity extends AbstractEntity {
   nestedSchemata?: Entity[];
   detail?: EntityDetail;
   actions?: string[];
+}
+
+export type FindResult = {
+  data: Document[],
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface EntityContext {
+  entity: Entity;
+  searchTerm: Writable<string | null>;
+  result: Readable<FindResult & { page: number }>;
+  find(conditions: { term?: string; page?: number }, debounceTime?: number): void;
+}
+
+export type FindActionInput = {
+  entityName: string;
+  page: number;
+  filter?: Filter<Document>;
+  pageSize?: number;
 }

@@ -12,7 +12,7 @@
   const ref = attribute.ref ?? key;
 </script>
 
-{#await EntityActions.loadAll(ref)}
+{#await EntityActions.find({ entityName: ref })}
   Loading relation attribute...
 {:then documents} 
   <FormSelect 

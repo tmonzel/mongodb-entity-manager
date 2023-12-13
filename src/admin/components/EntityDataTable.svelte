@@ -4,7 +4,7 @@
 	import type { Document } from 'mongodb';
 
   export let entity: Entity;
-  export let documents: Document[];
+  export let data: Document[];
 
   const columns: string[] = entity.collection.columns ?? Object.keys(entity.attributes);
 </script>
@@ -19,9 +19,9 @@
       <th></th>
     </tr>
   </thead>
-  {#if documents.length > 0 }
+  {#if data.length > 0 }
   <tbody>
-    {#each documents as doc}
+    {#each data as doc}
     <tr>
       <td style="width: 20%;">{doc.id}</td>
       
@@ -44,8 +44,8 @@
   {/if}
 </table>
 
-{#if documents.length === 0 }
+{#if data.length === 0 }
 <div class="alert alert-warning">
-  No entries yet
+  No entries found
 </div>
 {/if}

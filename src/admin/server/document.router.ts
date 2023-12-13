@@ -5,31 +5,42 @@ import type { CreateDocumentInput, UpdateDocumentInput } from './types';
 import { ObjectId } from 'mongodb';
 import { normalizeEntity } from './normalizer';
 import { denormalizeDocument } from './denormalizer';
+import type { FindActionInput, FindResult } from '$admin/types';
 
 export const documentRouter = createRouter({
 
   // Load collection view
-	loadAll: publicProcedure.input((name: unknown) => {
-      if (typeof name === 'string') return name;
+	find: publicProcedure.input((input: unknown) => {
+      if (typeof input === 'object') return input as FindActionInput;
 
-      throw new Error(`Invalid input: ${typeof name}`);
-    }).query(async({ input }) => {
+      throw new Error(`Invalid input: ${typeof input}`);
+    }).query<FindResult>(async({ input }) => {
 
-    const collection = getCollection(input);
-    const documents = await collection.find({}).toArray();
-    const entity = getEntity(input);
+    const collection = getCollection(input.entityName);
+    const entity = getEntity(input.entityName);
 
     if(!entity) {
       throw new Error(`Entity ${input} does not exist`);
     }
 
+    const filter = input.filter ?? {};
+    const pageSize = input.pageSize ?? 25;
+    const pageIndex = input.page - 1;
+    
+    const totalItems = await collection.countDocuments(filter);
+    const documents = await collection.find(filter, { skip: pageIndex * pageSize, limit: pageSize }).toArray();
+
     // Include all toplevel fields for now
     const fields = Object.keys(entity.attributes);
 
-		return Promise.all(documents.map(doc => normalizeEntity(entity, doc, { type: 'loadAll' }, fields)));
+		return {
+      data: await Promise.all(documents.map(doc => normalizeEntity(entity, doc, { type: 'find' }, fields))),
+      totalPages: Math.round(totalItems / pageSize),
+      totalItems,
+    } as FindResult;
 	}),
 
-  loadOne: publicProcedure.input((input: unknown) => {
+  findOne: publicProcedure.input((input: unknown) => {
     if (typeof input === 'object') return input as { id: string; name: string };
       throw new Error(`Invalid input: ${typeof input}`);
     }).query(async({ input }) => {
@@ -51,7 +62,7 @@ export const documentRouter = createRouter({
     // Include all toplevel fields for now
     const fields = Object.keys(entity.attributes);
   
-    return normalizeEntity(entity, doc, { type: 'loadOne' }, fields);
+    return normalizeEntity(entity, doc, { type: 'findOne' }, fields);
   }),
 
   deleteOne: publicProcedure.input((input: unknown) => {

@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
-	const document = await (await defaultCaller(event)).documents.loadOne({ 
+	const document = await (await defaultCaller(event)).documents.findOne({ 
 		id: event.params.documentId, 
 		name: event.params.entityName 
 	});

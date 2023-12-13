@@ -48,6 +48,7 @@ export const ProductEntity = createEntity({
 
   collection: {
     title: 'Products',
-    columns: ['name']
+    columns: ['name'],
+    search: 'name'
   }
 });

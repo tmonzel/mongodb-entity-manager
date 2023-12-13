@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-  import type { LayoutData } from './$types';
 	import Dialog from '$admin/components/Dialog.svelte';
 	import { isActionAllowed } from '$admin/client/helpers';
 	import { invalidateAll } from '$app/navigation';
 	import { notify } from '$admin/notification';
 	import { EntityActions } from '$admin/client';
 	import EntityDataTable from '$admin/components/EntityDataTable.svelte';
+	import { getContext } from 'svelte';
+	import type { EntityContext } from '$admin/types';
 
-  export let data: LayoutData;
-
+  const { entity, searchTerm, result, find } = getContext<EntityContext>('entity');
+  
   let deleteDialog: Dialog;
 
   async function deleteDocument(id: string): Promise<void> {
@@ -17,12 +18,13 @@
 
     notify({ 
       type: 'success', 
-      message: `${data.entity.type}#${id} removed` 
+      message: `${entity.type}#${id} removed` 
     });
 
     deleteDialog.close();
     invalidateAll();
   }
+  
 </script>
 
 <div class="page-options justify-content-between">
@@ -30,25 +32,51 @@
     <span class="material-icons me-2">chevron_left</span>
     Entities
   </a>
-  {#if isActionAllowed(data.entity, 'create')}
-  <a class="btn btn-primary" href="{$page.url}/new">+ New {data.entity.type}</a>
+  {#if isActionAllowed(entity, 'create')}
+  <a class="btn btn-primary" href="{$page.url}/new">+ New {entity.type}</a>
   {/if}
 </div>
 
-<h1>{data.entity.collection.title}</h1>
-<p class="lead mb-4">{data.entity.description}</p>
+<h1>{entity.collection.title}</h1>
+<p class="lead mb-4">{entity.description}</p>
 
-<EntityDataTable entity={data.entity} documents={data.documents}>
+{#if entity.collection.search}
+<div class="mb-4">
+  <input 
+    type="text" 
+    id="documentSearchInput" 
+    class="form-control" 
+    placeholder="Search by {entity.collection.search}"
+    on:input={(e) => find({ term: e.currentTarget.value, page: 1 }, 200)}
+    value={$searchTerm}
+  >
+</div>
+{/if}
+
+<nav class="d-flex justify-content-end">
+  {#if $result.totalPages > 1}
+  <ul class="pagination pagination mb-0">
+    {#each { length: $result.totalPages } as _, i}
+      {@const page = i + 1}
+      <li class="page-item" class:active={$result.page === page}>
+        <button class="page-link" on:click={() => find({ page })}>{page}</button>
+      </li>
+    {/each}
+  </ul>
+  {/if}
+</nav>
+
+<EntityDataTable entity={entity} data={$result.data}>
   <svelte:fragment slot="options" let:document>
     <a class="btn p-0 d-flex me-2" href="{$page.url}/{document.id}">
       <span class="material-icons">arrow_right_alt</span>
     </a>
-    {#if isActionAllowed(data.entity, 'update')}
+    {#if isActionAllowed(entity, 'update')}
     <a class="btn p-0 d-flex me-2" href="{$page.url}/{document.id}/edit">
       <span class="material-icons">edit</span>
     </a>
     {/if}
-    {#if isActionAllowed(data.entity, 'delete')}
+    {#if isActionAllowed(entity, 'delete')}
     <button class="btn p-0 d-flex" on:click={() => deleteDialog.open(document)}>
       <span class="material-icons">delete</span>
     </button>

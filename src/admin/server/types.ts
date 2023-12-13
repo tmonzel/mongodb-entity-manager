@@ -9,7 +9,7 @@ export type DocumentResolver<T extends Document> = {
 }
 
 export type Query = {
-  type: 'loadAll' | 'loadOne' | 'loadEmbed';
+  type: 'find' | 'findOne' | 'loadEmbed';
   data?: any;
 }
 
