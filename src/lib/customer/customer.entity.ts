@@ -71,7 +71,8 @@ export const CustomerEntity = createEntity({
   // Configurate Collection View
   collection: {
     title: 'Customers',
-    columns: ['firstName', 'lastName', 'address', 'totalOrders']
+    columns: ['firstName', 'lastName', 'address', 'totalOrders'],
+    search: 'firstName'
   }
 });
 

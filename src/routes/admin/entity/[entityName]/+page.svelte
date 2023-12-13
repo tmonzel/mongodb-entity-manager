@@ -1,22 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { Document } from 'mongodb';
   import type { LayoutData } from './$types';
 	import Dialog from '$admin/components/Dialog.svelte';
-	import { isActionAllowed, renderAttributeColumn, renderAttributeValue } from '$admin/client/helpers';
+	import { isActionAllowed } from '$admin/client/helpers';
 	import { invalidateAll } from '$app/navigation';
 	import { notify } from '$admin/notification';
 	import { EntityActions } from '$admin/client';
+	import EntityDataTable from '$admin/components/EntityDataTable.svelte';
 
   export let data: LayoutData;
 
-  const columns: string[] = data.entity.collection.columns ?? Object.keys(data.entity.attributes);
-
   let deleteDialog: Dialog;
-
-  function openDeleteDialog(doc: Document): void {
-    deleteDialog.open(doc);
-  }
 
   async function deleteDocument(id: string): Promise<void> {
     await EntityActions.deleteOne({ id, name: $page.params.entityName });
@@ -43,59 +37,24 @@
 
 <h1>{data.entity.collection.title}</h1>
 <p class="lead mb-4">{data.entity.description}</p>
-  
-<table class="table">
-  <thead>
-    <tr>
-      <th>#</th>
-      {#each columns as col}
-      <th>{renderAttributeColumn(data.entity, col)}</th>
-      {/each}
-      <th></th>
-    </tr>
-  </thead>
-  {#if data.documents.length > 0 }
-  <tbody>
-    {#each data.documents as doc}
-    <tr>
-      <td style="width: 20%;">{doc.id}</td>
-      
-      {#each columns as col}
-        {#if data.entity.attributes[col] !== undefined}
-          <td>{renderAttributeValue(data.entity.attributes[col], col, doc)}</td>
-        {:else}
-          <td>{doc[col]}</td>
-        {/if}
-      {/each}
 
-      <td style="width: 1%">
-        <div class="d-flex">
-          <a class="btn p-0 d-flex me-2" href="{$page.url}/{doc.id}">
-            <span class="material-icons">arrow_right_alt</span>
-          </a>
-          {#if isActionAllowed(data.entity, 'update')}
-          <a class="btn p-0 d-flex me-2" href="{$page.url}/{doc.id}/edit">
-            <span class="material-icons">edit</span>
-          </a>
-          {/if}
-          {#if isActionAllowed(data.entity, 'delete')}
-          <button class="btn p-0 d-flex" on:click={() => openDeleteDialog(doc)}>
-            <span class="material-icons">delete</span>
-          </button>
-          {/if}
-        </div>
-      </td>
-    </tr>
-    {/each}
-  </tbody>
-  {/if}
-</table>
-
-{#if data.documents.length === 0 }
-<div class="alert alert-warning">
-  No entries yet
-</div>
-{/if}
+<EntityDataTable entity={data.entity} documents={data.documents}>
+  <svelte:fragment slot="options" let:document>
+    <a class="btn p-0 d-flex me-2" href="{$page.url}/{document.id}">
+      <span class="material-icons">arrow_right_alt</span>
+    </a>
+    {#if isActionAllowed(data.entity, 'update')}
+    <a class="btn p-0 d-flex me-2" href="{$page.url}/{document.id}/edit">
+      <span class="material-icons">edit</span>
+    </a>
+    {/if}
+    {#if isActionAllowed(data.entity, 'delete')}
+    <button class="btn p-0 d-flex" on:click={() => deleteDialog.open(document)}>
+      <span class="material-icons">delete</span>
+    </button>
+    {/if}
+  </svelte:fragment>
+</EntityDataTable>
 
 <Dialog bind:this={deleteDialog} let:data>
   <svelte:fragment slot="title">
