@@ -1,7 +1,8 @@
 import { createHttpHandle } from '$admin/router';
 import { initializeAdmin } from '$admin/server';
-import { CustomerEntity } from '$lib/customer/customer.entity';
-import { OrderEntity, OrderItemResolver, OrderResolver } from '$lib/order/order.entity';
+import { CustomerEntity, CustomerResolver } from '$lib/customer/customer.entity';
+import { OrderItemResolver } from '$lib/order/order-item.entity';
+import { OrderEntity, OrderResolver } from '$lib/order/order.entity';
 import { ProductEntity } from '$lib/product/product.entity';
 
 // Setup all admin data
@@ -13,6 +14,7 @@ initializeAdmin({
 	},
 
 	resolvers: {
+		Customer: CustomerResolver,
 		Order: OrderResolver,
 		OrderItem: OrderItemResolver
 	},

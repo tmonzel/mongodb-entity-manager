@@ -1,4 +1,5 @@
-import type { Entity } from '$admin/types';
+import { createEntity, createResolver } from '$admin/server/entity';
+import type { Order } from '$lib/order/order.entity';
 
 export type Customer = {
   firstName: string;
@@ -7,9 +8,11 @@ export type Customer = {
     street: string; 
     postalCode: string; 
   };
+  
+  orders: Order[];
 }
 
-export const CustomerEntity: Entity = {
+export const CustomerEntity = createEntity({
   type: 'Customer',
   key: 'customer',
 
@@ -18,7 +21,6 @@ export const CustomerEntity: Entity = {
   
   attributes: {
     firstName: {
-      label: 'First Name',
       type: 'text',
       core: true,
       validations: {
@@ -27,7 +29,6 @@ export const CustomerEntity: Entity = {
     },
 
     lastName: {
-      label: 'Last Name',
       type: 'text',
       core: true,
       validations: {
@@ -36,32 +37,33 @@ export const CustomerEntity: Entity = {
     },
 
     orders: {
-      type: 'relationship:has_many',
-      ref: 'orders'
+      type: 'relationship:has_many'
     },
 
     address: {
-      label: 'Address',
       type: 'object',
-      renderAs: '{street}, {postalCode} {city} ',
+      renderAs: '{street}, {postalCode} {city}',
       attributes: {
         street: {
-          label: 'Street',
           type: 'text',
         },
   
         postalCode: {
-          label: 'Postal code',
           type: 'text',
         },
 
         city: {
-          label: 'City',
           type: 'text'
         }
       }
     },
   },
+
+  labels: {
+    totalOrders: 'Order count',
+  },
+
+  actions: ['create', 'update', 'delete'],
 
   // Configurate Detail View
   detail: {},
@@ -69,6 +71,15 @@ export const CustomerEntity: Entity = {
   // Configurate Collection View
   collection: {
     title: 'Customers',
-    columns: ['firstName', 'lastName', 'address', 'orders']
+    columns: ['firstName', 'lastName', 'address', 'totalOrders']
   }
-}
+});
+
+export const CustomerResolver = createResolver<Customer>({
+  normalize: (customer: Customer) => {
+    return {
+      ...customer,
+      totalOrders: customer.orders ? customer.orders.length : undefined
+    };
+  }
+});

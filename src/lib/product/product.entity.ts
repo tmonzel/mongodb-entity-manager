@@ -1,16 +1,12 @@
-import type { Entity } from '$admin/types';
+import { createEntity } from '$admin/server/entity';
+import { ProductVariantEntity, type ProductVariant } from './product-variant.entity';
 
 export type Product = {
   name: string;
   variants: ProductVariant[];
 }
 
-export type ProductVariant = {
-  name: string;
-  price: number;
-}
-
-export const ProductEntity: Entity = {
+export const ProductEntity = createEntity({
   type: 'Product',
   key: 'product',
   description: 'Goods which can be purchased by customers',
@@ -44,31 +40,14 @@ export const ProductEntity: Entity = {
 
     variants: {
       type: 'embed',
-      entity: {
-        type: 'ProductVariant',
-        key: 'productVariant',
-
-        attributes: {
-          name: {
-            type: 'text',
-            label: 'Name'
-          },
-
-          price: {
-            type: 'number',
-            label: 'Price'
-          }
-        },
-
-        collection: {
-          title: 'Variants'
-        }
-      }
+      entity: ProductVariantEntity
     }
   },
+
+  actions: ['create', 'update', 'delete'],
 
   collection: {
     title: 'Products',
     columns: ['name']
   }
-}
+});

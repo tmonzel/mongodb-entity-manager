@@ -1,97 +1,42 @@
-import type { Entity, EntityAttributeMap } from '$admin/types';
+import type { EntityAttributeMap } from '$admin/types';
 import type { Document } from 'mongodb';
 import type { Customer } from '../customer/customer.entity';
-import type { Product, ProductVariant } from '../product/product.entity';
 import type { Mutation } from '$admin/server/types';
+import { OrderItemEntity, type OrderItem } from './order-item.entity';
+import { createEntity, createResolver } from '$admin/server/entity';
 
-export interface Order {
+export interface Order extends Document {
   customer: Customer;
   items: OrderItem[];
   totalPrice: number;
   createdAt: Date;
 }
 
-export type OrderItem = {
-  product: Product;
-  productVariant: ProductVariant;
-  quantity: number;
-  price: number;
-}
-
 const attributes: EntityAttributeMap = {
   customer: {
     type: 'relationship:belongs_to',
     ref: 'customers',
-    label: 'Customer' 
   },
 
   items: {
     type: 'embed',
     core: true,
-    entity: {
-      type: 'OrderItem',
-      key: 'orderItem',
-
-      attributes: {
-        product: {
-          type: 'relationship:belongs_to',
-          ref: 'products',
-          label: 'Product',
-          core: true
-        },
-
-        quantity: {
-          type: 'number',
-          default: 1,
-          core: true
-        },
-
-        price: {
-          type: 'number',
-          default: 0.0,
-          core: true
-        },
-
-        totalPrice: {
-          type: 'number',
-          label: 'Total Price',
-          core: true,
-          virtual: true
-        }
-      },
-
-      form: [
-        'product', 
-        'quantity', 
-        'price'
-      ],
-
-      collection: {
-        title: 'Items'
-      }
-    },
-  },
-
-  totalPrice: {
-    type: 'number',
-    label: 'Total Price',
-    core: true,
-    virtual: true
+    entity: OrderItemEntity,
   },
 
   createdAt: {
     type: 'text',
-    label: 'Created At',
   },
 }
 
-export const OrderEntity: Entity = {
+export const OrderEntity = createEntity({
   type: 'Order',
   key: 'order',
   description: 'Groups of ordered items by customer',
-  renderAs: '{totalPrice}',
 
   attributes,
+
+  actions: [],
 
   form: ['customer', 'items'],
 
@@ -99,12 +44,10 @@ export const OrderEntity: Entity = {
     title: 'Orders',
     columns: ['customer', 'totalPrice', 'createdAt']
   },
-}
+});
 
-export const OrderResolver = {
-  normalize: (doc: Document) => {
-    const order = doc as Order;
-
+export const OrderResolver = createResolver<Order>({
+  normalize: (order: Order) => {
     return {
       ...order,
       totalPrice: order.items.reduce((v, c) => (v + c.price * c.quantity), 0)
@@ -121,15 +64,4 @@ export const OrderResolver = {
       createdAt: new Date(Date.now())
     };
   }
-}
-
-export const OrderItemResolver = {
-  normalize: (doc: Document) => {
-    const item = doc as OrderItem;
-
-    return {
-      ...item,
-      totalPrice: item.price * item.quantity
-    };
-  },
-}
+})
