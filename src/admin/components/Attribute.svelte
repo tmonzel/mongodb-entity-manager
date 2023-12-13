@@ -7,6 +7,7 @@
 	import RelationshipAttribute from './RelationshipAttribute.svelte';
 	import EmbedAttributeForm from './EmbedAttributeForm.svelte';
 	import BelongsToRelationshipAttribute from './BelongsToRelationshipAttribute.svelte';
+	import { renderAttributeLabel } from '$admin/client/helpers';
 
   export let key: string;
   export let control: FormControl | FormControl[] | FormGroup;
@@ -20,7 +21,7 @@
       <FormInput 
         bind:control
         type={attribute.type} 
-        label={attribute.label ?? key}
+        label={renderAttributeLabel(attribute, key)}
       />
       
     {:else if attribute.type === 'select'}
@@ -29,14 +30,14 @@
         bind:control 
         multiple={attribute.multiple}
         options={attribute.options} 
-        label={attribute.label ?? key} 
+        label={renderAttributeLabel(attribute, key)} 
       />
 
     {:else if attribute.type === 'switch'}
 
       <FormCheckbox 
         bind:control 
-        label={attribute.label ?? key}
+        label={renderAttributeLabel(attribute, key)}
       />
 
     {:else if attribute.type === 'embed'}
@@ -57,7 +58,7 @@
     
     <div class="bg-light p-3">
       <div class="mb-2">
-        <small class="text-muted">{attribute.label}</small>
+        <small class="text-muted">{renderAttributeLabel(attribute, key)}</small>
       </div>
       <div class="row">
         {#each Object.entries(attribute.attributes) as [key, attr]}

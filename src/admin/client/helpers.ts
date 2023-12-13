@@ -1,4 +1,4 @@
-import type { AbstractEntity, EntityAttribute } from '$admin/types';
+import type { AbstractAttribute, AbstractEntity, Entity, EntityAttribute } from '$admin/types';
 import type { Document } from 'mongodb';
 import { getEntitySchema } from './context';
 
@@ -6,6 +6,7 @@ export function humanize(str: string) {
   return str
       .replace(/^[\s_]+|[\s_]+$/g, '')
       .replace(/[_\s]+/g, ' ')
+      .replace(/([a-z]+)([A-Z]+)/g, '$1 $2')
       .replace(/^[a-z]/, (m) => m.toUpperCase());
 }
 
@@ -53,8 +54,18 @@ export function renderAttributeValue(attr: EntityAttribute, name: string, doc: D
   return doc[name] ?? '-'
 }
 
-export function renderAttributeLabel(entity: AbstractEntity, key: string): string {
-  const attr = entity.attributes[key];
-  
+export function renderAttributeLabel(attr: AbstractAttribute, key: string): string {
   return attr.label ?? humanize(key); 
+}
+
+export function renderAttributeColumn(entity: AbstractEntity, key: string): string {
+  if(entity.labels && entity.labels[key]) {
+    return entity.labels[key];
+  }
+  
+  return humanize(key); 
+}
+
+export function isActionAllowed(entity: Entity, actionName: string): boolean {
+  return entity.actions ? entity.actions.indexOf(actionName) !== -1 : false;
 }
