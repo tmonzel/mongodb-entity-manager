@@ -1,4 +1,4 @@
-import type { EntitySchema } from '$admin/types';
+import type { EntitySchema } from './types';
 import { getContext } from 'svelte';
 
 export function getEntitySchema(): EntitySchema {

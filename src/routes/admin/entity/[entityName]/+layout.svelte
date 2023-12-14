@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { onMount, setContext } from 'svelte';
 	import type { LayoutData } from './$types';
-	import type { EntityContext, FindActionInput, FindResult } from '$admin/types';
+	import { EntityActions, type EntityContext, type FindActionInput, type FindResult } from '$admin';
 	import { writable } from 'svelte/store';
-	import { EntityActions } from '$admin/client';
 	import { page } from '$app/stores';
 
   export let data: LayoutData;
@@ -39,7 +38,7 @@
       const r = await EntityActions.find(input);
       result.set({
         ...r,
-        page: input.page
+        page: input.page!
       });
     }, debounceTime);
   }

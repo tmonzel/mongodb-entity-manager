@@ -1,6 +1,7 @@
 import { establishConnection } from './data';
-import type { DocumentResolver } from './types';
-import type { AdminConfig, Entity } from '../types';
+import type { DocumentResolver } from '../types';
+import type { AdminConfig } from '../types';
+import type { Entity } from '$admin/entity';
 
 export * from './data';
 
@@ -14,7 +15,7 @@ export function getEntity(name: string): Entity | undefined {
   return configuration.schema[name];
 }
 
-export function getResolver(type: string): DocumentResolver | undefined {
+export function getResolver<T extends Document = any>(type: string): DocumentResolver<T> | undefined {
   return configuration.resolvers ? configuration.resolvers[type] : undefined;
 }
 

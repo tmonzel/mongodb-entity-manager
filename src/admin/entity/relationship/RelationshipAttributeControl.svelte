@@ -1,12 +1,10 @@
 <script lang="ts">
-	import type { FormControl } from '$admin/form';
-	import type { RelationshipAttribute } from '../types';
-	import { FormSelect } from '$admin/form/components';
-	import { EntityActions } from '$admin/client';
-	import { humanize, renderEntityDocument } from '../client/helpers';
+	import { FormSelect, type FormControl } from '$admin/form';
+	import type { RelationshipAttribute } from './types';
+	import { EntityActions, humanize, renderEntityDocument } from '$admin';
 
   export let key: string;
-  export let control: FormControl<string[]>;
+  export let control: FormControl<string | string[]>;
   export let attribute: RelationshipAttribute;
 
   const ref = attribute.ref ?? key;
@@ -18,7 +16,7 @@
   <FormSelect 
     options={result.data.map(doc => ({ name: renderEntityDocument(ref, doc), value: doc.id }))} 
     label={attribute.label ?? humanize(key)} 
-    multiple
+    multiple={attribute.type === 'relationship:belongs_to_many'}
     bind:control={control} 
   />
 {/await}

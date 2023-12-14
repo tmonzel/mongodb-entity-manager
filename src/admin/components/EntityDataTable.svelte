@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { renderAttributeColumn, renderAttributeValue } from '$admin/client/helpers';
-	import type { Entity } from '$admin/types';
+	import { AttributeValue } from '$admin/entity';
+	import { renderAttributeColumn } from '$admin/helpers';
+	import type { Entity } from '$admin/entity';
 	import type { Document } from 'mongodb';
-	import AttributeValue from './AttributeValue.svelte';
 
   export let entity: Entity;
   export let data: Document[];

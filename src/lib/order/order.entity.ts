@@ -1,9 +1,10 @@
-import type { EntityAttributeMap } from '$admin/types';
+
 import type { Document } from 'mongodb';
 import type { Customer } from '../customer/customer.entity';
-import type { Mutation } from '$admin/server/types';
+import type { Mutation } from '$admin/types';
 import { OrderItemEntity, type OrderItem } from './order-item.entity';
-import { createEntity, createResolver } from '$admin/server/entity';
+import type { EntityAttributeMap } from '$admin/entity';
+import { createEntity, createResolver } from '$admin';
 
 export interface Order extends Document {
   customer: Customer;

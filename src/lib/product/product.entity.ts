@@ -1,4 +1,4 @@
-import { createEntity } from '$admin/server/entity';
+import { createEntity } from '$admin';
 import { ProductVariantEntity, type ProductVariant } from './product-variant.entity';
 
 export type Product = {

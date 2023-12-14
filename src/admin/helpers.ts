@@ -1,6 +1,6 @@
-import type { AbstractAttribute, AbstractEntity, Entity, EntityAttribute } from '$admin/types';
 import type { Document } from 'mongodb';
 import { getEntitySchema } from './context';
+import type { AbstractEntity, Entity, EntityAttribute } from './entity';
 
 export function humanize(str: string) {
   return str
@@ -67,10 +67,6 @@ export function renderAttributeValue(attr: EntityAttribute, name: string, doc: D
   }
 
   return doc[name] ?? '-'
-}
-
-export function renderAttributeLabel(attr: AbstractAttribute, key: string): string {
-  return attr.label ?? humanize(key); 
 }
 
 export function renderAttributeColumn(entity: AbstractEntity, key: string): string {

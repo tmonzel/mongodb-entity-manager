@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Dialog from '$admin/components/Dialog.svelte';
-	import { isActionAllowed } from '$admin/client/helpers';
+	import { isActionAllowed } from '$admin/helpers';
 	import { notify } from '$admin/notification';
-	import { EntityActions } from '$admin/client';
+	import { EntityActions } from '$admin/actions';
 	import EntityDataTable from '$admin/components/EntityDataTable.svelte';
 	import { getContext, onMount } from 'svelte';
 	import type { EntityContext } from '$admin/types';

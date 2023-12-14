@@ -1,11 +1,10 @@
 import { getCollection } from './data';
 import { createRouter, publicProcedure } from '$admin/rpc';
 import { getEntity } from '$admin/server';
-import type { CreateDocumentInput, UpdateDocumentInput } from './types';
+import type { CreateDocumentInput, FindActionInput, FindResult, UpdateDocumentInput } from '../types';
 import { ObjectId } from 'mongodb';
-import { normalizeEntity } from './normalizer';
-import { denormalizeDocument } from './denormalizer';
-import type { FindActionInput, FindResult } from '$admin/types';
+import { normalizeEntity } from '$admin/entity/normalizer.server';
+import { denormalizeEntity } from '$admin/entity/denormalizer.server';
 
 export const documentRouter = createRouter({
 
@@ -96,7 +95,7 @@ export const documentRouter = createRouter({
       
       await collection.updateOne(
         { _id: new ObjectId(input.id) }, 
-        { $set: denormalizeDocument(input.entityName, entity.attributes, input.changes, { type: 'updateOne' }) }
+        { $set: denormalizeEntity(input.entityName, entity.attributes, input.changes, { type: 'updateOne' }) }
       );
 		}),
 
@@ -114,7 +113,7 @@ export const documentRouter = createRouter({
         throw new Error(`Entity ${input} does not exist`);
       }
       
-      await collection.insertOne(denormalizeDocument(input.entityName, entity.attributes, input.data, { type: 'create' }));
+      await collection.insertOne(denormalizeEntity(input.entityName, entity.attributes, input.data, { type: 'create' }));
 		}),
 
   loadEmbed: publicProcedure
@@ -140,7 +139,7 @@ export const documentRouter = createRouter({
       const fields = Object.keys(embedAttribute.entity.attributes);
 
       // Need to find a better solution
-      const denormalizedDocument = denormalizeDocument(input.embedName, embedAttribute.entity.attributes, input.data, { type: 'embed' });
+      const denormalizedDocument = denormalizeEntity(input.embedName, embedAttribute.entity.attributes, input.data, { type: 'embed' });
 
       return normalizeEntity(
         embedAttribute.entity, 

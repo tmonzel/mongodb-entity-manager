@@ -1,4 +1,4 @@
-import { createEntity, createResolver } from '$admin/server/entity';
+import { createEntity, createResolver } from '$admin';
 import type { Product } from '$lib/product/product.entity';
 import type { Document } from 'mongodb';
 
@@ -31,13 +31,6 @@ export const OrderItemEntity = createEntity({
       default: 0.0,
       core: true
     },
-
-    totalPrice: {
-      type: 'number',
-      label: 'Total Price',
-      core: true,
-      virtual: true
-    }
   },
 
   form: [

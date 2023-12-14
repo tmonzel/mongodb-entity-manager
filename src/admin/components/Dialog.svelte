@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-  import { fade } from "svelte/transition";
+  import { fade } from 'svelte/transition';
 
   export let opened = false;
   export let size = 'md';

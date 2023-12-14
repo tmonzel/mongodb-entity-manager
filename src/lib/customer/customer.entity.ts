@@ -1,4 +1,4 @@
-import { createEntity, createResolver } from '$admin/server/entity';
+import { createEntity, createResolver } from '$admin';
 import type { Order } from '$lib/order/order.entity';
 
 export type Customer = {

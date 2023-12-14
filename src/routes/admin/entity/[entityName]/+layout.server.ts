@@ -1,5 +1,5 @@
 
-import type { Entity } from '$admin/types';
+import type { Entity } from '$admin/entity';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').LayoutServerLoad} */

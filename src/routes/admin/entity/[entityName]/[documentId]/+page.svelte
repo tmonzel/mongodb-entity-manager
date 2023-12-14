@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { isActionAllowed } from '$admin/client/helpers';
-import { page } from '$app/stores';
+	import { isActionAllowed } from '$admin';
+  import { page } from '$app/stores';
 	import type { LayoutData } from './$types';
 
   export let data: LayoutData;

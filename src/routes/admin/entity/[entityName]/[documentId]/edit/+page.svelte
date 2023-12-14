@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { EntityActions } from '$admin/client';
-	import EntityForm from '$admin/components/EntityForm.svelte';
+	import { EntityActions } from '$admin';
+	import { EntityForm } from '$admin/entity';
 	import { createForm, getFormState, markAllAsTouched } from '$admin/form';
 	import { notify } from '$admin/notification';
 	import type { PageData } from './$types';

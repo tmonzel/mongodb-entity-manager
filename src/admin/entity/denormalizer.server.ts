@@ -1,9 +1,9 @@
-import type { EntityAttributeMap } from '$admin/types';
+import type { Mutation } from '$admin';
 import { ObjectId, type Document } from 'mongodb';
-import { getResolver } from '.';
-import type { Mutation } from './types';
+import type { EntityAttributeMap } from './types';
+import { getResolver } from '$admin/server';
 
-export function denormalizeDocument(entityName: string, attributes: EntityAttributeMap, data: any, mutation: Mutation): Document {
+export function denormalizeEntity(entityName: string, attributes: EntityAttributeMap, data: any, mutation: Mutation): Document {
   const result: Document = {};
 
   for(const [key, attr] of Object.entries(attributes)) {
@@ -18,7 +18,7 @@ export function denormalizeDocument(entityName: string, attributes: EntityAttrib
         result[key] = parseFloat(data[key]);
         break;
       case 'embed':
-        result[key] = (data[key] as Document[]).map(doc => denormalizeDocument(key, attr.entity.attributes, doc, mutation));
+        result[key] = (data[key] as Document[]).map(doc => denormalizeEntity(key, attr.entity.attributes, doc, mutation));
         break;
       default:
         result[key] = data[key]

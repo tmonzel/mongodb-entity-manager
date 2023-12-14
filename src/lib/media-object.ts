@@ -1,4 +1,4 @@
-import { createEntity } from '$admin/server/entity';
+import { createEntity } from '$admin';
 
 export const MediaObjectEntity = createEntity({
   type: 'MediaObject',
