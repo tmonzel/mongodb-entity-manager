@@ -3,7 +3,7 @@ import { FormControl } from './form-control';
 import { FormGroup, type FormState } from './types';
 
 export function getFormState(form: FormGroup): FormState {
-  let state: FormState = {
+  const state: FormState = {
     valid: false,
     errors: [],
     touched: false,
@@ -33,14 +33,28 @@ export function getFormState(form: FormGroup): FormState {
     } else if(control instanceof FormGroup) {
       const childState = getFormState(control);
 
-      state = {
-        ...childState, 
-        errors: [...state.errors, ...childState.errors],
-        value: { ...state.value, [key]: childState.value }
-      };
+      if(!childState.valid) {
+        state.valid = false;
+      }
+
+      if(childState.touched) {
+        state.touched = true;
+      }
+
+      if(childState.touched) {
+        state.touched = true;
+      }
+
+      if(childState.dirty) {
+        state.dirty = true;
+      }
+      
+      state.errors = [...state.errors, ...childState.errors];
+      state.value = { ...state.value, [key]: childState.value };
     }
   }
-
+  
+  
   if(state.errors.length === 0) {
     state.valid = true;
   }

@@ -46,6 +46,9 @@ export const CustomerEntity = createEntity({
       attributes: {
         street: {
           type: 'text',
+          validations: {
+            required: true
+          }
         },
   
         postalCode: {

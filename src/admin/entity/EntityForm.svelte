@@ -13,16 +13,14 @@
   const attributeKeys = entity.form ?? Object.keys(entity.attributes);
 
 	function createControlFromAttribute(attr: EntityAttribute, value: any): FormControl | FormGroup {
-    if(attr.type === 'object') {
-      return new FormGroup(createControlsFromAttributes(attr.attributes, value ?? {}));
-    }
-
     if(attr.type in attributeModuleDict) {
       const module = attributeModuleDict[attr.type];
 
       if(module.createControl) {
         return module.createControl(value, attr)
       }
+    } else if(attr.type === 'object') {
+      return new FormGroup(createControlsFromAttributes(attr.attributes, value ?? {}));
     }
     
     return new FormControl(value);

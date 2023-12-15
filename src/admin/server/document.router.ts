@@ -53,7 +53,7 @@ export const documentRouter = createRouter({
   ),
 
   create: publicProcedure.input((input: unknown) => {
-    if (typeof input === 'object') {
+    if (typeof input !== 'object') {
       throw new Error(`Invalid input: ${typeof input}`);
     }
 
