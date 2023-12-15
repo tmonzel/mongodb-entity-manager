@@ -2,15 +2,8 @@ import type { Readable, Writable } from 'svelte/store';
 import type { Document, Filter } from 'mongodb';
 import type { Entity } from './entity';
 
-export type AdminConfig = {
-  // All defined entities
-  schema: EntitySchema;
-
-  resolvers?: { [entityName: string]: DocumentResolver<any> };
-}
-
 export type EntitySchema = {
-  [entityName: string]: Entity;
+  [collectionName: string]: Entity;
 }
 
 export type FindResult = {
@@ -36,7 +29,7 @@ export type FindActionInput = {
 export type DocumentNormalizer<T> = (doc: T, query: Query) => Document;
 export type DocumentDenormalizer<T> = (doc: T, mutation: Mutation) => Document;
 
-export type DocumentResolver<T extends Document> = {
+export type DocumentResolver<T extends object> = {
   normalize?: DocumentNormalizer<T>;
   denormalize?: DocumentDenormalizer<T>
 }

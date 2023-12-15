@@ -1,8 +1,7 @@
-import { createEntity, createResolver } from '$admin';
+import { createEntity } from '$admin/entity';
 import type { Product } from '$lib/product/product.entity';
-import type { Document } from 'mongodb';
 
-export interface OrderItem extends Document {
+export type OrderItem = {
   product: Product;
   quantity: number;
   price: number;
@@ -42,13 +41,4 @@ export const OrderItemEntity = createEntity({
   collection: {
     title: 'Items'
   }
-});
-
-export const OrderItemResolver = createResolver<OrderItem>({
-  normalize: (item: OrderItem) => {
-    return {
-      ...item,
-      totalPrice: item.price * item.quantity
-    };
-  },
 });

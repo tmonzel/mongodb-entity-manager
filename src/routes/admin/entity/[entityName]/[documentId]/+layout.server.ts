@@ -6,7 +6,7 @@ import { error } from '@sveltejs/kit';
 export async function load(event) {
 	const document = await (await defaultCaller(event)).documents.findOne({ 
 		id: event.params.documentId, 
-		name: event.params.entityName 
+		entityName: event.params.entityName 
 	});
 
 	if(!document) {

@@ -7,5 +7,5 @@
 </script>
 
 <div>
-  bla
+  Nothing
 </div>

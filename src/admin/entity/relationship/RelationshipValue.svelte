@@ -2,8 +2,8 @@
 	import { getContext } from 'svelte';
 	import type { RelationshipAttribute } from './types';
 	import EntityValue from '../EntityValue.svelte';
-	import type { EntitySchema } from '$admin';
 	import type { Document } from 'mongodb';
+	import type { EntitySchema } from '$admin';
 
   const schema = getContext<EntitySchema>('schema');
 

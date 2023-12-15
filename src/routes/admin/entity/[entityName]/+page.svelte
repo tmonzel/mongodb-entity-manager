@@ -13,7 +13,7 @@
   let deleteDialog: Dialog;
 
   async function deleteDocument(id: string): Promise<void> {
-    await EntityActions.deleteOne({ id, name: $page.params.entityName });
+    await EntityActions.deleteOne({ id, entityName: $page.params.entityName });
 
     notify({ 
       type: 'success', 

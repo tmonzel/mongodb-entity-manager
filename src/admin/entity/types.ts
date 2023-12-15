@@ -6,6 +6,8 @@ import type { InputAttribute } from './input/types';
 import type { RelationshipAttribute } from './relationship/types';
 import type { SelectAttribute } from './select/types';
 import type { SwitchAttribute } from './switch/types';
+import type { Mutation, Query } from '$admin';
+import type { Document } from 'mongodb';
 
 export interface AbstractAttribute {
   type: string;
@@ -34,26 +36,27 @@ export type EntityAttributeModule<TAttribute extends AbstractAttribute, V = any>
   value?: ComponentType<SvelteComponent<{ key: string; attribute: TAttribute; value: any }>>;
 }
 
+export type EntityAttributeResolver<TAttribute extends AbstractAttribute> = {
+  normalize?: (doc: Document, attribute: TAttribute, entity: AbstractEntity, key: string, query: Query, normalizer: EntityNormalizer) => Promise<any>;
+  denormalize?: (doc: Document, attribute: TAttribute, entity: AbstractEntity, key: string, mutation: Mutation) => any;
+}
+
 export type EntityAttributeMap = { [name: string]: EntityAttribute };
 
 export interface AbstractEntity {
   type: string;
   key: string;
   attributes: EntityAttributeMap;
-  collection: EntityCollection;
+  
+  collection: {
+    title: string;
+    search?: string;
+    columns?: string[];
+    pageSize?: number;
+  };
+
   labels?: { [key: string]: string };
   form?: string[];
-}
-
-export type EntityCollection = {
-  title: string;
-  search?: string;
-  columns?: string[];
-  pageSize?: number;
-}
-
-export type EntityDetail = {
-  attributes?: string[];
 }
 
 export interface Entity extends AbstractEntity {
@@ -61,6 +64,8 @@ export interface Entity extends AbstractEntity {
   renderAs?: string;
   identifiedBy?: string;
   nestedSchemata?: Entity[];
-  detail?: EntityDetail;
+  detail?: { attributes?: string[]; };
   actions?: string[];
 }
+
+export type EntityNormalizer = (entity: Entity, data: Document, query: Query, fields: string[]) => Document;

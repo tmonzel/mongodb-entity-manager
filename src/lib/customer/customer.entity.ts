@@ -1,4 +1,4 @@
-import { createEntity, createResolver } from '$admin';
+import { createEntity } from '$admin/entity';
 import type { Order } from '$lib/order/order.entity';
 
 export type Customer = {
@@ -73,14 +73,5 @@ export const CustomerEntity = createEntity({
     title: 'Customers',
     columns: ['firstName', 'lastName', 'address', 'totalOrders'],
     search: 'firstName'
-  }
-});
-
-export const CustomerResolver = createResolver<Customer>({
-  normalize: (customer: Customer) => {
-    return {
-      ...customer,
-      totalOrders: customer.orders ? customer.orders.length : undefined
-    };
   }
 });

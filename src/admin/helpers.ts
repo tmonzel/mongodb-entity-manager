@@ -1,6 +1,7 @@
 import type { Document } from 'mongodb';
-import { getEntitySchema } from './context';
 import type { AbstractEntity, Entity, EntityAttribute } from './entity';
+import { getContext } from 'svelte';
+import type { EntitySchema } from './types';
 
 export function humanize(str: string) {
   return str
@@ -23,7 +24,7 @@ export function renderDocument(str: string, doc: Document): string {
 }
 
 export function renderEntityDocument(entityName: string, doc: Document): string {
-  const schema = getEntitySchema();
+  const schema = getContext<EntitySchema>('schema');
   const entity = schema[entityName];
 
   if(!entity || !entity.renderAs) {

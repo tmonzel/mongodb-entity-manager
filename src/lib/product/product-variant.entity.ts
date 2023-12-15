@@ -1,4 +1,4 @@
-import { createEntity } from '$admin';
+import { createEntity } from '$admin/entity';
 
 export type ProductVariant = {
   name: string;

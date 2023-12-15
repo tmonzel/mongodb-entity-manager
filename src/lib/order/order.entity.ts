@@ -1,34 +1,11 @@
-
-import type { Document } from 'mongodb';
 import type { Customer } from '../customer/customer.entity';
-import type { Mutation } from '$admin/types';
 import { OrderItemEntity, type OrderItem } from './order-item.entity';
-import type { EntityAttributeMap } from '$admin/entity';
-import { createEntity, createResolver } from '$admin';
+import { createEntity } from '$admin/entity';
 
-export interface Order extends Document {
+export type Order = {
   customer: Customer;
   items: OrderItem[];
-  totalPrice: number;
   createdAt: Date;
-}
-
-const attributes: EntityAttributeMap = {
-  customer: {
-    type: 'relationship:belongs_to',
-    ref: 'customers',
-    core: true
-  },
-
-  items: {
-    type: 'embed',
-    core: true,
-    entity: OrderItemEntity,
-  },
-
-  createdAt: {
-    type: 'text',
-  },
 }
 
 export const OrderEntity = createEntity({
@@ -36,7 +13,23 @@ export const OrderEntity = createEntity({
   key: 'order',
   description: 'Groups of ordered items by customer',
 
-  attributes,
+  attributes: {
+    customer: {
+      type: 'relationship:belongs_to',
+      ref: 'customers',
+      core: true
+    },
+  
+    items: {
+      type: 'embed',
+      core: true,
+      entity: OrderItemEntity,
+    },
+  
+    createdAt: {
+      type: 'text',
+    },
+  },
 
   actions: ['update'],
 
@@ -47,23 +40,3 @@ export const OrderEntity = createEntity({
     columns: ['customer', 'totalPrice', 'createdAt']
   },
 });
-
-export const OrderResolver = createResolver<Order>({
-  normalize: (order: Order) => {
-    return {
-      ...order,
-      totalPrice: order.items.reduce((v, c) => (v + c.price * c.quantity), 0)
-    };
-  },
-
-  denormalize: (order: Document, mutation: Mutation) => {
-    if(mutation.type !== 'create') {
-      return order;
-    } 
-
-    return {
-      ...order,
-      createdAt: new Date(Date.now())
-    };
-  }
-})
