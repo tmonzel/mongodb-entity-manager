@@ -4,8 +4,8 @@ import type { CreateDocumentInput, UpdateDocumentInput } from '$admin';
 import { denormalizeEntity } from '$admin/entity/resolver.server';
 import { getEntity } from '$admin/entity/map.server';
 
-async function deleteOne(input: { entityName: string; id: string; }): Promise<boolean> {
-  const collection = getCollection(input.entityName);
+async function deleteOne(input: { entityKey: string; id: string; }): Promise<boolean> {
+  const collection = getCollection(input.entityKey);
   
   await collection.deleteOne({ _id: new ObjectId(input.id) });
 
@@ -13,8 +13,8 @@ async function deleteOne(input: { entityName: string; id: string; }): Promise<bo
 }
 
 async function updateOne(input: UpdateDocumentInput) {
-  const entity = getEntity(input.entityName);
-  const collection = getCollection(input.entityName);
+  const entity = getEntity(input.entityKey);
+  const collection = getCollection(input.entityKey);
 
   if(!entity) {
     throw new Error(`Entity ${input} does not exist`);
@@ -22,20 +22,20 @@ async function updateOne(input: UpdateDocumentInput) {
   
   await collection.updateOne(
     { _id: new ObjectId(input.id) }, 
-    { $set: await denormalizeEntity(entity, entity.attributes, input.changes, { type: 'updateOne' }) }
+    { $set: await denormalizeEntity(entity, input.changes, { type: 'updateOne' }) }
   );
 }
 
 async function create(input: CreateDocumentInput) {
-  const entity = getEntity(input.entityName);
-  const collection = getCollection(input.entityName);
+  const entity = getEntity(input.entityKey);
+  const collection = getCollection(input.entityKey);
 
   if(!entity) {
     throw new Error(`Entity ${input} does not exist`);
   }
   
   await collection.insertOne(
-    await denormalizeEntity(entity, entity.attributes, input.data, { type: 'create' })
+    await denormalizeEntity(entity, input.data, { type: 'create' })
   );
 }
 

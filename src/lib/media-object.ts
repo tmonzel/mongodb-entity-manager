@@ -2,7 +2,8 @@ import { createEntity } from '$admin/entity';
 
 export const MediaObjectEntity = createEntity({
   type: 'MediaObject',
-  key: 'mediaObject',
+
+  title: 'Media Objects',
   description: 'Can store binary data',
 
   attributes: {
@@ -12,8 +13,4 @@ export const MediaObjectEntity = createEntity({
   },
 
   actions: ['create', 'delete'],
-
-  collection: {
-    title: 'Media Objects'
-  }
 });

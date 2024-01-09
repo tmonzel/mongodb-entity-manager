@@ -12,16 +12,15 @@
   <div class="d-flex">
     <a class="btn btn-light d-flex me-2" href="{$page.url}/..">
       <span class="material-icons me-2">chevron_left</span>
-      {data.entity.collection.title}
+      {data.entity.title}
     </a>
 
-    {#if data.entity.nestedSchemata}
-      {#each data.entity.nestedSchemata as s}
+    <!--
+      Loop nested schemata
       <a class="btn btn-success d-flex me-2" href="{$page.url}/">
         {s.collection.title}
       </a>
-      {/each}
-    {/if}
+    -->
   </div>
 
   {#if isActionAllowed(data.entity, 'update')}

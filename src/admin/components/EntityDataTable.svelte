@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { AttributeValue } from '$admin/entity';
+	import { AttributeValue, type Entity } from '$admin/entity';
 	import { renderAttributeColumn } from '$admin/helpers';
-	import type { Entity } from '$admin/entity';
 	import type { Document } from 'mongodb';
 
   export let entity: Entity;
   export let data: Document[];
-
-  const columns: string[] = entity.collection.columns ?? Object.keys(entity.attributes);
+  export let columns: string[];
 </script>
 
 <table class="table">
@@ -28,7 +26,7 @@
       
       {#each columns as col}
         {#if entity.attributes[col] !== undefined}
-          <td><AttributeValue {entity} key={col} value={doc[col]} /></td>
+          <td><AttributeValue attribute={entity.attributes[col]} key={col} value={doc[col]} /></td>
         {:else}
           <td>{doc[col]}</td>
         {/if}

@@ -18,7 +18,7 @@
     }
 
     await EntityActions.create({ 
-      entityName: $page.params.entityName, 
+      entityKey: $page.params.entityName, 
       data: formState.value 
     });
 
@@ -37,7 +37,7 @@
 <div class="page-options justify-content-between">
   <a class="btn btn-light d-flex me-2" href="{$page.url + '/..'}">
     <span class="material-icons me-2">chevron_left</span>
-    {data.entity.collection.title}
+    {data.entity.title}
   </a>
   <button class="btn btn-primary" on:click={submit} disabled={!formState.submittable}>Create</button>
 </div>

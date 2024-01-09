@@ -6,17 +6,18 @@
   export let key: string;
   export let control: FormControl<string | string[]>;
   export let attribute: RelationshipAttribute;
+  export let value: any;
 
   const ref = attribute.ref ?? key;
 </script>
 
-{#await EntityActions.find({ entityName: ref })}
+{#await EntityActions.find({ entityKey: ref })}
   Loading relation attribute...
 {:then result} 
   <FormSelect 
     options={result.data.map(doc => ({ name: renderEntityDocument(ref, doc), value: doc.id }))} 
     label={attribute.label ?? humanize(key)} 
     multiple={attribute.type === 'relationship:belongs_to_many'}
-    bind:control={control} 
+    bind:control 
   />
 {/await}

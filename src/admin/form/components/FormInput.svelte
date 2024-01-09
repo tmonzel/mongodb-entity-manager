@@ -15,6 +15,11 @@
 
   function handleChange(e: Event) {
     value = (e.target as HTMLInputElement).value;
+
+    if(type === 'number') {
+      value = parseFloat(value);
+    }
+
     control = control.handleChange(value);
   }
 

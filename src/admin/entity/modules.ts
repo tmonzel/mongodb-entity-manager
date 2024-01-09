@@ -18,7 +18,7 @@ export const attributeModuleDict: AttributeModuleDict = {
   'number': InputAttributeModule,
 
   'file': FileAttributeModule,
-  'embed': EmbedAttributeModule,
+  'embedded': EmbedAttributeModule,
   'select': SelectAttributeModule,
   'switch': SwitchAttributeModule
 }

@@ -7,13 +7,14 @@
   export let key: string;
   export let control: FormControl | FormGroup | FormControl[];
   export let attribute: EntityAttribute;
+  export let value: any;
 </script>
 
 <div class="entity-form-attribute">
   {#if control instanceof FormControl}
   
     {#if attribute.type in attributeModuleDict}
-      <svelte:component this={attributeModuleDict[attribute.type].edit} {attribute} {key} bind:control={control} />
+      <svelte:component this={attributeModuleDict[attribute.type].edit} {attribute} {key} bind:control={control} {value} />
     {/if}
   
   {:else if control instanceof FormGroup && attribute.type === 'object'}
@@ -23,9 +24,9 @@
         <small class="text-muted">{renderAttributeLabel(attribute, key)}</small>
       </div>
       <div class="row">
-        {#each Object.entries(attribute.attributes) as [key, attr]}
+        {#each Object.entries(attribute.attributes) as [k, attr]}
           <div class="col">
-            <svelte:self bind:control={control[key]} {key} attribute={attr} />
+            <svelte:self bind:control={control[k]} key={k} attribute={attr} value={value ? value[k] : undefined} />
           </div>
         {/each}
       </div>

@@ -10,12 +10,20 @@
   export let value: Document = {};
   export let form: FormGroup;
 
-  const attributeKeys = entity.form ?? Object.keys(entity.attributes);
+  const attributeKeys: string[] = [];
+
+  for(const [key, attr] of Object.entries(entity.attributes)) {
+    if(attr.editable !== true) {
+      continue;
+    }
+
+    attributeKeys.push(key);
+  }
 
 	function createControlFromAttribute(attr: EntityAttribute, value: any): FormControl | FormGroup {
     if(attr.type in attributeModuleDict) {
       const module = attributeModuleDict[attr.type];
-
+      
       if(module.createControl) {
         return module.createControl(value, attr)
       }
@@ -41,6 +49,6 @@
 
 {#each attributeKeys as key}
   <div class="mb-4">
-    <AttributeControl bind:control={form[key]} {key} attribute={entity.attributes[key]} />
+    <AttributeControl bind:control={form[key]} {key} attribute={entity.attributes[key]} value={value[key]}/>
   </div>
 {/each}

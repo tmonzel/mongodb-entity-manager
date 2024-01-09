@@ -1,13 +1,11 @@
 <script lang="ts">
-	import type { Entity } from './types';
 	import { attributeModuleDict } from './modules';
 	import { renderDocument } from '$admin';
+	import type { EntityAttribute } from './types';
 
-  export let entity: Entity;
+  export let attribute: EntityAttribute;
   export let key: string;
   export let value: any;
-  
-  const attribute = entity.attributes[key];
 </script>
 
 {#if attribute.type in attributeModuleDict && attributeModuleDict[attribute.type].value}

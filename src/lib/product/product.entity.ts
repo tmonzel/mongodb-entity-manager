@@ -1,14 +1,17 @@
 import { createEntity } from '$admin/entity';
-import { ProductVariantEntity, type ProductVariant } from './product-variant.entity';
 
 export type Product = {
   name: string;
   variants: ProductVariant[];
 }
 
+export type ProductVariant = {
+  name: string;
+  price: number;
+}
+
 export const ProductEntity = createEntity({
   type: 'Product',
-  key: 'product',
   description: 'Goods which can be purchased by customers',
   renderAs: '{name}',
   
@@ -19,7 +22,7 @@ export const ProductEntity = createEntity({
       validations: {
         required: true
       },
-      core: true
+      editable: true
     },
 
     categories: {
@@ -39,17 +42,27 @@ export const ProductEntity = createEntity({
     },
 
     variants: {
-      type: 'embed',
-      entity: ProductVariantEntity,
-      core: true
+      type: 'embedded',
+      entity: {
+        type: 'ProductVariant',
+        attributes: {
+          name: {
+            type: 'text',
+            label: 'Name',
+          },
+      
+          price: {
+            type: 'number',
+            label: 'Price',
+          }
+        },
+      }
     }
   },
 
   actions: ['create', 'update', 'delete'],
 
-  collection: {
-    title: 'Products',
-    columns: ['name', 'categories'],
-    search: 'name'
-  }
+  title: 'Products',
+  columns: ['name', 'categories'],
+  search: 'name'
 });

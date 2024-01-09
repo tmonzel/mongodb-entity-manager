@@ -13,8 +13,8 @@ export const documentRouter = createRouter({
       throw new Error(`Input type must be object`);
     }
 
-    if(!('entityName' in input) || typeof input.entityName !== 'string') {
-      throw new Error(`No entityName given`);
+    if(!('entityKey' in input) || typeof input.entityKey !== 'string') {
+      throw new Error(`No entityKey given`);
     }
 
     return input as FindActionInput;
@@ -27,7 +27,7 @@ export const documentRouter = createRouter({
       throw new Error(`Invalid input: ${typeof input}`);
     }
 
-    return input as { entityName: string; id: string; };
+    return input as { entityKey: string; id: string; };
   }).query(
     ({ input }) => queries.findOne(input)
   ),
@@ -37,7 +37,7 @@ export const documentRouter = createRouter({
       throw new Error(`Invalid input: ${typeof input}`);
     }
 
-    return input as { entityName: string; id: string; };
+    return input as { entityKey: string; id: string; };
   }).mutation(
     ({ input }) => mutations.deleteOne(input)
   ),
@@ -69,7 +69,7 @@ export const documentRouter = createRouter({
 			throw new Error(`Invalid input: ${typeof data}`);
 		})
 		.query(async ({ input }) => {
-      const entity = getEntity(input.entityName);
+      const entity = getEntity(input.entityKey);
 
       if(!entity) {
         throw new Error(`Entity ${input} does not exist`);
@@ -77,15 +77,12 @@ export const documentRouter = createRouter({
 
       const embedAttribute = entity.attributes[input.embedName];
 
-      if(embedAttribute.type !== 'embed') {
-        throw new Error(`This attribute is not of type 'embed'`);
+      if(embedAttribute.type !== 'embedded') {
+        throw new Error(`This attribute is not of type 'embedded'`);
       }
 
-      // Include all toplevel fields for now
-      const fields = Object.keys(embedAttribute.entity.attributes);
-
       // Need to find a better solution
-      const denormalizedDocument = await denormalizeEntity(input.embedName, embedAttribute.entity.attributes, input.data, { type: 'embed' });
+      const denormalizedDocument = await denormalizeEntity(embedAttribute.entity, input.data, { type: 'embed' });
 
       return normalizeEntity(
         embedAttribute.entity, 
@@ -93,7 +90,8 @@ export const documentRouter = createRouter({
         {
           type: 'loadEmbed'
         },
-        fields
+        0,
+        embedAttribute.entity.includes
       );
 		})
 });

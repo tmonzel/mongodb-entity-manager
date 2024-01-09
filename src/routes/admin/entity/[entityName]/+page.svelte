@@ -6,14 +6,16 @@
 	import { EntityActions } from '$admin/actions';
 	import EntityDataTable from '$admin/components/EntityDataTable.svelte';
 	import { getContext, onMount } from 'svelte';
-	import type { EntityContext } from '$admin/types';
+	import type { EntityContext } from '$admin/entity';
 
   const { entity, searchTerm, result, find } = getContext<EntityContext>('entity');
   
   let deleteDialog: Dialog;
 
+  const columns = entity.columns ?? Object.keys(entity.attributes);
+
   async function deleteDocument(id: string): Promise<void> {
-    await EntityActions.deleteOne({ id, entityName: $page.params.entityName });
+    await EntityActions.deleteOne({ id, entityKey: $page.params.entityName });
 
     notify({ 
       type: 'success', 
@@ -42,16 +44,16 @@
   {/if}
 </div>
 
-<h1>{entity.collection.title}</h1>
+<h1>{entity.title ?? entity.type + 'Collection'}</h1>
 <p class="lead mb-4">{entity.description}</p>
 
-{#if entity.collection.search}
+{#if entity.search}
 <div class="mb-4">
   <input 
     type="text" 
     id="documentSearchInput" 
     class="form-control" 
-    placeholder="Search by {entity.collection.search}"
+    placeholder="Search by {entity.search}"
     on:input={(e) => find({ term: e.currentTarget.value, page: 1 }, 200)}
     value={$searchTerm}
   >
@@ -71,7 +73,7 @@
   {/if}
 </nav>
 
-<EntityDataTable entity={entity} data={$result.data}>
+<EntityDataTable entity={entity} {columns} data={$result.data}>
   <svelte:fragment slot="options" let:document>
     <a class="btn p-0 d-flex me-2" href="{$page.url}/{document.id}">
       <span class="material-icons">arrow_right_alt</span>

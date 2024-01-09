@@ -1,10 +1,4 @@
-import type { Readable, Writable } from 'svelte/store';
 import type { Document, Filter } from 'mongodb';
-import type { Entity } from './entity';
-
-export type EntitySchema = {
-  [collectionName: string]: Entity;
-}
 
 export type FindResult = {
   data: Document[],
@@ -12,15 +6,8 @@ export type FindResult = {
   totalPages: number;
 }
 
-export interface EntityContext {
-  entity: Entity;
-  searchTerm: Writable<string | null>;
-  result: Readable<FindResult & { page: number }>;
-  find(conditions: { term?: string; page?: number }, debounceTime?: number): void;
-}
-
 export type FindActionInput = {
-  entityName: string;
+  entityKey: string;
   page?: number;
   filter?: Filter<Document>;
   pageSize?: number;
@@ -30,13 +17,14 @@ export type DocumentNormalizer<T> = (doc: T, query: Query) => Document;
 export type DocumentDenormalizer<T> = (doc: T, mutation: Mutation) => Document;
 
 export type DocumentResolver<T extends object> = {
-  normalize?: DocumentNormalizer<T>;
-  denormalize?: DocumentDenormalizer<T>
+  output?: DocumentNormalizer<T>;
+  input?: DocumentDenormalizer<T>
 }
 
 export type Query = {
   type: 'find' | 'findOne' | 'loadEmbed';
   data?: any;
+  includes?: string[];
 }
 
 export type Mutation = {
@@ -45,12 +33,12 @@ export type Mutation = {
 }
 
 export type CreateDocumentInput = {
-  entityName: string;
+  entityKey: string;
   data: Document;
 }
 
 export type UpdateDocumentInput = {
-  entityName: string;
+  entityKey: string;
 
   id: string;
   changes: Partial<Document>;

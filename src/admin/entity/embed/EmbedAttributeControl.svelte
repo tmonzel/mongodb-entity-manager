@@ -1,26 +1,27 @@
 <script lang="ts">
 	import { markAllAsTouched, type FormControl, getFormState, createForm } from '$admin/form';
-	import { writable } from 'svelte/store';
 	import type { Document } from 'mongodb';
-	import { onDestroy } from 'svelte';
 	import Dialog from '../../components/Dialog.svelte';
 	import EntityForm from '../EntityForm.svelte';
-	import { page } from '$app/stores';
-	import { EntityActions, renderAttributeValue } from '$admin';
-	import { renderAttributeLabel } from '../helpers';
 	import type { EmbedAttribute } from './types';
+	import AttributeValue from '../AttributeValue.svelte';
+	import { EntityActions, renderAttributeColumn } from '$admin';
+	import { page } from '$app/stores';
 
   export let key: string;
   export let attribute: EmbedAttribute;
   export let control: FormControl<Document[]>;
+  export let value: Document[];
   
   const form = createForm();
-  const values = writable<Document[]>(control.value ?? []);
 
-  let formDialog: Dialog;
-  let selectedIndex = writable<number | null>();
+  let documents: Document[] = value ?? [];
+  let createDialog: Dialog;
+  let updateDialog: Dialog;
+  let selectedIndex: number | null = null;
+  let columns = attribute.entity.columns ?? Object.keys(attribute.entity.attributes);
 
-  $: editableDocument = $selectedIndex != null ? $values[$selectedIndex] : undefined;
+  $: editableDocument = selectedIndex != null ? documents[selectedIndex] : undefined;
 
   async function save() {
     if(!formState.valid) {
@@ -29,71 +30,76 @@
     }
 
     const doc = await EntityActions.loadEmbed({ 
-      entityName: $page.params.entityName, 
+      entityKey: $page.params.entityName, 
       embedName: key,
       data: formState.value
     });
-    
-    if(editableDocument) {
-      values.update(v => v.map((value, index) => {
-        if(index === $selectedIndex) {
+
+    if(selectedIndex !== null) {
+      documents = documents.map((value, index) => {
+        if(index === selectedIndex) {
           return doc;
         }
 
         return value;
-      }));
+      });
 
-      $selectedIndex = null;
-
+      control.value[selectedIndex] = formState.value;
+      control = control;
+      
+      updateDialog.close();
     } else {
-      values.update(v => ([...v, doc]));
-    
-      formDialog.close();
+      documents = [...documents, doc];
+      control = control.handleChange([ 
+        ...control.value, 
+        formState.value
+      ]);
+      
+      createDialog.close();
     }
   }
 
   function removeByIndex(index: number): void {
-    values.update(v => v.filter((value, i) => {
+    documents = documents.filter((value, i) => {
+      return i !== index;
+    });
+
+    control = control.handleChange(control.value.filter((value, i) => {
       return i !== index;
     }));
   }
-
-  const unsubscribeWatchIds = values.subscribe(vals => {
-    control.setValue(vals);
-    control = control;
-  });
-
-  onDestroy(() => {
-    unsubscribeWatchIds();
-  });
 
   $: formState = getFormState($form);
 </script>
 
 <div class="bg-light p-3">
   <div class="mb-2">
-    <small class="text-muted">{attribute.entity.collection.title}</small>
+    <small class="text-muted">{attribute.label}</small>
   </div>
 
   <table class="table">
     <thead>
       <tr>
-        {#each Object.keys(attribute.entity.attributes) as key}
-        <th>{renderAttributeLabel(attribute.entity, key)}</th>
+        {#each columns as col}
+        <th>{renderAttributeColumn(attribute.entity, col)}</th>
         {/each}
         <th></th>
       </tr>
     </thead>
-    {#if $values.length > 0 }
+    {#if documents.length > 0 }
     <tbody>
-      {#each $values as value, index}
+      {#each documents as value, index}
       <tr>
-        {#each Object.entries(attribute.entity.attributes) as [key, attr]}
-        <td>{renderAttributeValue(attr, key, value)}</td>
+        {#each columns as col}
+          {#if attribute.entity.attributes[col] !== undefined}
+            <td><AttributeValue attribute={attribute.entity.attributes[col]} key={col} value={value[col]} /></td>
+          {:else}
+            <td>{value[col]}</td>
+          {/if}
         {/each}
         <td style="width: 1%">
           <div class="d-flex">
-            <button class="btn material-icons p-0 me-2" on:click={() => $selectedIndex = index}>
+            <button class="btn material-icons p-0 me-2" on:click={() => selectedIndex = index}>
               edit
             </button>
             <button class="btn material-icons p-0" on:click={() => removeByIndex(index)}>
@@ -107,16 +113,16 @@
     {/if}
   </table>
 
-  {#if $values.length === 0 }
+  {#if documents.length === 0 }
   <div class="alert alert-warning">
     No entries yet
   </div>
   {/if}
 
-  <button class="btn btn-success" on:click={() => formDialog.open()}>Add</button>
+  <button class="btn btn-success" on:click={() => createDialog.open()}>Add</button>
 
   <!-- Update Dialog -->
-  <Dialog opened={!!editableDocument} on:close={() => $selectedIndex = null}>
+  <Dialog bind:this={updateDialog} opened={!!editableDocument} on:close={() => selectedIndex = null}>
     <svelte:fragment slot="title">
       Update {attribute.entity.type}
     </svelte:fragment>
@@ -131,7 +137,7 @@
   </Dialog>
 
   <!-- Create Dialog -->
-  <Dialog bind:this={formDialog}>
+  <Dialog bind:this={createDialog}>
     <svelte:fragment slot="title">
       Create {attribute.entity.type}
     </svelte:fragment>

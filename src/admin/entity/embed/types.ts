@@ -1,6 +1,7 @@
-import type { AbstractAttribute, AbstractEntity } from '../types';
+import type { AbstractAttribute, EmbeddedEntity } from '../types';
 
 export interface EmbedAttribute extends AbstractAttribute {
-  type: 'embed',
-  entity: AbstractEntity;
+  type: 'embedded',
+  label?: string;
+  entity: EmbeddedEntity;
 }

@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 	import type { LayoutData } from './$types';
-	import { EntityActions, type EntityContext, type FindActionInput, type FindResult } from '$admin';
+	import { EntityActions, type FindActionInput, type FindResult } from '$admin';
 	import { writable } from 'svelte/store';
+	import type { EntityContext } from '$admin/entity';
 	import { page } from '$app/stores';
 
   export let data: LayoutData;
@@ -14,13 +15,13 @@
     totalPages: 0,
     page: 1
   });
-  
+   
   let debounceTimout: number;
 
   function find(options: { term?: string; page?: number } = { term: '' }, debounceTime: number = 0) {
     const input: FindActionInput = { 
-      entityName: $page.params.entityName,
-      pageSize: data.entity.collection.pageSize ?? 25,
+      entityKey: $page.params.entityName,
+      pageSize: data.entity.pageSize ?? 25,
       page: options.page ?? 1,
     }
 
@@ -28,8 +29,8 @@
       $searchTerm = options.term;
     }
 
-    if(data.entity.collection.search) {
-      input.filter = { [data.entity.collection.search]: { $regex: $searchTerm ?? '', $options: 'i' } }
+    if(data.entity.search) {
+      input.filter = { [data.entity.search]: { $regex: $searchTerm ?? '', $options: 'i' } }
     }
 
     clearTimeout(debounceTimout);
@@ -49,10 +50,6 @@
     result,
     find
   });
-
-  onMount(() => {
-    find();
-  })
 </script>
 
 <slot></slot>

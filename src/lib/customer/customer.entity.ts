@@ -14,15 +14,16 @@ export type Customer = {
 
 export const CustomerEntity = createEntity({
   type: 'Customer',
-  key: 'customer',
 
+  title: 'Customers',
   description: 'Can purchase products',
+
   renderAs: '{lastName}, {firstName}',
   
   attributes: {
     firstName: {
       type: 'text',
-      core: true,
+      editable: true,
       validations: {
         required: true
       },
@@ -30,18 +31,20 @@ export const CustomerEntity = createEntity({
 
     lastName: {
       type: 'text',
-      core: true,
+      editable: true,
       validations: {
         required: true
       }
     },
 
     orders: {
-      type: 'relationship:has_many'
+      type: 'relationship:has_many',
+      foreignKey: 'customer'
     },
 
     address: {
       type: 'object',
+      editable: true,
       renderAs: '{street}, {postalCode} {city}',
       attributes: {
         street: {
@@ -59,22 +62,17 @@ export const CustomerEntity = createEntity({
           type: 'text'
         }
       }
-    },
+    }
   },
 
-  labels: {
-    totalOrders: 'Order count',
-  },
+  actions: [
+    'create', 
+    'update', 
+    'delete'
+  ],
 
-  actions: ['create', 'update', 'delete'],
+  includes: ['orders'],
 
-  // Configurate Detail View
-  detail: {},
-
-  // Configurate Collection View
-  collection: {
-    title: 'Customers',
-    columns: ['firstName', 'lastName', 'address', 'totalOrders'],
-    search: 'firstName'
-  }
+  columns: ['firstName', 'lastName', 'address', 'totalOrders'],
+  search: 'firstName'
 });

@@ -1,19 +1,19 @@
-import type { Entity } from './types';
+import type { Entity, EntitySchema } from './types';
 
 const entityMap = new Map<string, Entity>();
 
-export function registerEntity(collectionName: string, entity: Entity): void {
-  entityMap.set(collectionName, entity);
+export function registerEntity(type: string, entity: Entity): void {
+  entityMap.set(type, entity);
 }
 
-export function entityExists(collectionName: string): boolean {
-  return entityMap.has(collectionName);
+export function entityExists(type: string): boolean {
+  return entityMap.has(type);
 }
 
-export function getEntity(collectionName: string): Entity | undefined {
-  return entityMap.get(collectionName);
+export function getEntity(type: string): Entity | undefined {
+  return entityMap.get(type);
 }
 
-export function getSchema(): { [name: string]: Entity } {
+export function getSchema(): EntitySchema {
   return Object.fromEntries(entityMap);
 }

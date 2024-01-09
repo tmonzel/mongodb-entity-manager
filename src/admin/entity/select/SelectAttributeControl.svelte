@@ -6,6 +6,7 @@
   export let key: string;
   export let control: FormControl<any | any[]>;
   export let attribute: SelectAttribute;
+  export let value: any;
 </script>
 
 <FormSelect 

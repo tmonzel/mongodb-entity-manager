@@ -1,7 +1,6 @@
 import type { Document } from 'mongodb';
-import type { AbstractEntity, Entity, EntityAttribute } from './entity';
 import { getContext } from 'svelte';
-import type { EntitySchema } from './types';
+import type { Entity, EntitySchema } from './entity';
 
 export function humanize(str: string) {
   return str
@@ -34,43 +33,7 @@ export function renderEntityDocument(entityName: string, doc: Document): string 
   return renderDocument(entity.renderAs, doc);
 }
 
-export function renderAttributeValue(attr: EntityAttribute, name: string, doc: Document): string {
-
-  if(attr.type === 'object' && attr.renderAs) {
-    return renderDocument(attr.renderAs, doc[name]);
-  }
-
-  if(attr.type === 'select') {
-    if(!Array.isArray(doc[name]) || doc[name].length === 0) {
-      return '-';
-    }
-
-    return (doc[name] as string[])
-      .map(v => attr.options.find(opt => opt.value === v))
-      .map(p => p?.name)
-      .join(', ');
-  }
-
-  if(attr.type === 'relationship:belongs_to') {
-    return renderEntityDocument(attr.ref ?? name, doc[name]);
-  }
-
-  if(attr.type === 'relationship:belongs_to_many' || attr.type === 'relationship:has_many') {
-    if(Array.isArray(doc[name])) {
-      if(doc[name].length === 0) {
-        return '[]';
-      }
-
-      return doc[name].map((d: Document) => renderEntityDocument(attr.ref ?? name, d))
-    }
-
-    return renderEntityDocument(attr.ref ?? name, doc[name]);
-  }
-
-  return doc[name] ?? '-'
-}
-
-export function renderAttributeColumn(entity: AbstractEntity, key: string): string {
+export function renderAttributeColumn(entity: Entity, key: string): string {
   if(entity.labels && entity.labels[key]) {
     return entity.labels[key];
   }

@@ -3,7 +3,8 @@
 	import type { RelationshipAttribute } from './types';
 	import EntityValue from '../EntityValue.svelte';
 	import type { Document } from 'mongodb';
-	import type { EntitySchema } from '$admin';
+	import type { EntitySchema } from '../types';
+	import { renderDocument } from '$admin';
 
   const schema = getContext<EntitySchema>('schema');
 
@@ -16,7 +17,12 @@
 
 {#if attribute.type === 'relationship:belongs_to'}
 
-  <EntityValue {entity} {value} />
+
+  {#if attribute.renderAs}
+    {renderDocument(attribute.renderAs, value)}
+  {:else}
+    <EntityValue {entity} {value} />
+  {/if}
 
 {:else if attribute.type === 'relationship:belongs_to_many' && Array.isArray(value)}
 

@@ -1,20 +1,19 @@
 import type { Query } from '$admin';
 import { getCollection } from '$admin/server';
-import type { Document, ObjectId } from 'mongodb';
-import type { AbstractEntity, EntityAttributeResolver, EntityNormalizer } from '../types';
+import { ObjectId, type Document } from 'mongodb';
+import type { EntityAttributeResolver, EntityNormalizer } from '../types';
 import type { RelationshipAttribute } from './types';
 import { getEntity } from '../map.server';
-import { getCoreFieldsFromAttributes } from '../helpers';
 
 export const RelationshipAttributeResolver: EntityAttributeResolver<RelationshipAttribute> = {
   async normalize(
     doc: Document, 
     attribute: RelationshipAttribute, 
-    entity: AbstractEntity, 
     key: string, 
     query: Query, 
+    depth: number,
     normalizer: EntityNormalizer
-  ): Promise<Document | Document[]> {
+  ): Promise<Document | Document[] | null> {
     const ref = attribute.ref ?? key;
     const refEntity = getEntity(ref);
   
@@ -23,14 +22,18 @@ export const RelationshipAttributeResolver: EntityAttributeResolver<Relationship
     }
   
     const refCollection = getCollection(ref);
-    const refCoreFields = getCoreFieldsFromAttributes(refEntity.attributes);
+    const refIncludes = refEntity.includes;
   
     if(attribute.type === 'relationship:has_many') {
+      if(!attribute.foreignKey) {
+        throw new Error('Foreign Key missing for has_many relationship');
+      }
+
       const documents = await refCollection.find({
-        [entity.key]: doc['_id']
+        [attribute.foreignKey]: doc['_id']
       }).toArray();
   
-      return Promise.all(documents.map(doc => normalizer(refEntity, doc, query, refCoreFields)));
+      return Promise.all(documents.map(doc => normalizer(refEntity, doc, query, depth + 1, refIncludes)));
     }
   
     if(attribute.type === 'relationship:belongs_to_many') {
@@ -40,19 +43,32 @@ export const RelationshipAttributeResolver: EntityAttributeResolver<Relationship
         }
       }).toArray();
   
-      return Promise.all(documents.map(doc => normalizer(refEntity, doc, query, refCoreFields)));
+      return Promise.all(documents.map(doc => normalizer(refEntity, doc, query, depth + 1, refIncludes)));
     }
   
     if(attribute.type === 'relationship:belongs_to') {
+      console.log(doc, key);
+      
       const document = await refCollection.findOne({ _id: doc[key] as ObjectId });
-  
+      
       if(!document) {
-        throw new Error('Related document not found');
+        return null;
       }
   
-      return normalizer(refEntity, document, query, refCoreFields);
+      return normalizer(refEntity, document, query, depth + 1, refIncludes);
     }
   
     return doc[key];
+  },
+
+  async denormalize(doc: Document, attribute: RelationshipAttribute, key: string) {
+    switch(attribute.type) {
+      case 'relationship:belongs_to_many':
+        return (doc[key] as string[]).map(id => new ObjectId(id));
+      case 'relationship:belongs_to':
+        return new ObjectId(doc[key]);
+      default:
+        return doc[key];
+    }
   }
 }

@@ -7,6 +7,7 @@
 
   export let key: string;
   export let attribute: SwitchAttribute;
+  export let value: any;
 </script>
 
 <FormCheckbox 

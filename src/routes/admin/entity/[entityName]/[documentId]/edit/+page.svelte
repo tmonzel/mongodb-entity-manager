@@ -18,7 +18,7 @@
     }
 
     await EntityActions.updateOne({ 
-      entityName: $page.params.entityName, 
+      entityKey: $page.params.entityName, 
       id: data.document.id,
       changes: formState.value as Partial<Document> 
     });
